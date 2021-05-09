@@ -38,7 +38,9 @@ $router->get('/about', 'HomeController@about');
 $router->get('/contact', 'HomeController@contact');
 $router->post('/contact', 'HomeController@contact');
 
-
+$router->get('/foo', function () {
+   return 'Foo!';
+});
 
 dump($router->getRoutes());
 

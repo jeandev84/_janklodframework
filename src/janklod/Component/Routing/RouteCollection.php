@@ -9,6 +9,10 @@ namespace Jan\Component\Routing;
 class RouteCollection
 {
 
+
+    protected $isGroup = false;
+
+
      /**
       * @var array
      */
@@ -65,6 +69,15 @@ class RouteCollection
                   $this->add($route);
               }
          }
+     }
+
+
+     /**
+      * @return bool
+     */
+     public function getGroupStatus()
+     {
+          return $this->isGroup;
      }
 
 

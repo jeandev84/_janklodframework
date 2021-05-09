@@ -344,9 +344,9 @@ class Router extends RouteCollection
      * Resolve handle
      *
      * @param $target
-     * @return string
+     * @return mixed
     */
-    protected function resolveTarget($target): string
+    protected function resolveTarget($target)
     {
         if(\is_string($target) && $namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
             $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
