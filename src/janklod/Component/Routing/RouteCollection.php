@@ -119,34 +119,4 @@ class RouteCollection
 
         return $routes;
     }
-    
-    
-
-     /**
-      * @param string $name
-      * @param array $params
-      * @return false|string
-     */
-     public function generate(string $name, array $params = []): bool|string
-     {
-            if(! $this->has($name)) {
-                return false;
-            }
-
-            /** @var Route $route */
-            $route = $this->namedRoutes[$name];
-
-            return $route->convertParams($params);
-     }
-
-
-
-     /**
-      * @param $name
-      * @return bool
-     */
-     public function has($name): bool
-     {
-         return \array_key_exists($name, $this->getNamedRoutes());
-     }
 }
