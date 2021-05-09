@@ -42,6 +42,9 @@ $router->get('/foo', function () {
    return 'Foo!';
 });
 
+$router->get('/post/{id}', 'PostController@show')
+       ->where('id', '\d+')
+;
 dump($router->getRoutes());
 
 $route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']);
