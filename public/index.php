@@ -1,5 +1,7 @@
 <?php
 
+use Jan\Component\Routing\Route;
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 
@@ -30,10 +32,13 @@ $routeCollection->add($route3)->setTarget(function () {
 dump($routeCollection->getRoutes());
 */
 
-
+echo "<h2>Routing</h2>";
 $router = new \Jan\Component\Routing\Router();
 
-$router->get('/', 'HomeController@index');
+$router->get('/', 'HomeController@index')
+       ->middleware(\App\Middleware\Authenticated::class)
+;
+
 $router->get('/about', 'HomeController@about');
 $router->get('/contact', 'HomeController@contact');
 $router->post('/contact', 'HomeController@contact');
@@ -45,8 +50,11 @@ $router->get('/foo', function () {
 $router->get('/post/{id}', 'PostController@show')
        ->where('id', '\d+')
 ;
+
 dump($router->getRoutes());
 
+
+/** @var Route $route */
 $route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']);
 
 
@@ -54,4 +62,16 @@ if(! $route) {
     dd('Route : '. $uri . ' not found!');
 }
 
-dd($route);
+/* dump($route['middleware']); */
+dump($route);
+
+
+echo "<h2>Container</h2>";
+
+
+$container = new \Jan\Component\Container\Container();
+$container->bind('request', new \Jan\Component\Http\Request());
+$container->bind('db', new \Jan\Component\Database\DatabaseManager());
+
+
+dd($container->getBindings());

@@ -6,7 +6,7 @@ namespace Jan\Component\Routing;
  * Class Route
  * @package Jan\Component\Routing
 */
-class Route
+class Route implements \ArrayAccess
 {
     /**
      * route path
@@ -682,5 +682,52 @@ class Route
     protected function resolvePattern($regex)
     {
         return str_replace('(', '(?:', $regex);
+    }
+
+
+    /**
+     * @param mixed $offset
+     * @return bool|void
+    */
+    public function offsetExists($offset)
+    {
+        return property_exists($this, $offset);
+    }
+
+
+    /**
+     * @param mixed $offset
+     * @return mixed|void
+    */
+    public function offsetGet($offset)
+    {
+        if(property_exists($this, $offset)) {
+            return $this->{$offset};
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+    */
+    public function offsetSet($offset, $value)
+    {
+        if(property_exists($this, $offset)) {
+             $this->{$offset} = $value;
+        }
+    }
+
+
+    /**
+     * @param mixed $offset
+    */
+    public function offsetUnset($offset)
+    {
+        if(property_exists($this, $offset)) {
+            unset($this->{$offset});
+        }
     }
 }
