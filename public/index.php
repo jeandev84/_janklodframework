@@ -62,6 +62,7 @@ if(! $route) {
     dd('Route : '. $uri . ' not found!');
 }
 
+
 /* dump($route['middleware']); */
 dump($route);
 
@@ -75,3 +76,8 @@ $container->bind('db', new \Jan\Component\Database\DatabaseManager());
 
 
 dd($container->getBindings());
+
+
+echo '<h2>Request</h2>';
+
+$request = new \Jan\Component\Http\Request();
