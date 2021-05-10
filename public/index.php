@@ -54,8 +54,11 @@ $router->get('/post/{id}', 'PostController@show')
 dump($router->getRoutes());
 
 
+$request = \Jan\Component\Http\Request::createFromGlobals();
+
 /** @var Route $route */
-$route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']);
+/* $route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']); */
+$route = $router->match($request->getMethod(), $uri = $request->getRequestUri());
 
 
 if(! $route) {
@@ -75,9 +78,11 @@ $container->bind('request', new \Jan\Component\Http\Request());
 $container->bind('db', new \Jan\Component\Database\DatabaseManager());
 
 
-dd($container->getBindings());
+dump($container->getBindings());
 
 
 echo '<h2>Request</h2>';
 
 $request = new \Jan\Component\Http\Request();
+
+dd($request);
