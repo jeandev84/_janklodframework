@@ -154,8 +154,6 @@ class Router extends RouteCollection
     */
     public function map($methods, string $path, $target, string $name = null): Route
     {
-        /* resolve given params */
-        // resolve given params
         $methods    = $this->resolveMethods($methods);
         $path       = $this->resolvePath($path);
         $target     = $this->resolveTarget($target);
