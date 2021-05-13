@@ -80,9 +80,12 @@ $container->bind('db', new \Jan\Component\Database\DatabaseManager());
 
 dump($container->getBindings());
 
-
 echo '<h2>Request</h2>';
+dump($request);
 
-$request = new \Jan\Component\Http\Request();
-
-dd($request);
+dump($request->query->replace([
+    'Email' => 'johndoe@gmail.com',
+    'Username' => 'johndoe',
+    'City' => 'Kurgan'
+]));
+dd($request->query->all());

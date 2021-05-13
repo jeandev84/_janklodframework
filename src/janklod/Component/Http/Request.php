@@ -2,12 +2,17 @@
 namespace Jan\Component\Http;
 
 
+use Jan\Component\Http\Bag\ParameterBag;
+
 /**
  * Class Request
  * @package Jan\Component\Http
 */
 class Request
 {
+
+    public $query;
+
 
     protected $method = 'GET';
 
@@ -17,7 +22,9 @@ class Request
 
     public function __construct()
     {
+        $this->query = new ParameterBag($_GET);
     }
+
 
 
     /**

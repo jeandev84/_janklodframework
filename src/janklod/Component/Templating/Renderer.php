@@ -18,7 +18,7 @@ class Renderer implements RendererInterface
        *
        * @var string
       */
-      protected $resource;
+      protected $resourcePath;
 
 
 
@@ -42,23 +42,23 @@ class Renderer implements RendererInterface
 
       /**
        * Renderer constructor.
-       * @param string $resource
+       * @param string $targetPath
       */
-      public function __construct(string $resource = '')
+      public function __construct(string $targetPath = '')
       {
-           if($resource) {
-               $this->resource($resource);
+           if($targetPath) {
+               $this->resource($targetPath);
            }
       }
 
 
       /**
-       * @param $resource
+       * @param $resourcePath
        * @return $this
       */
-      public function resource($resource)
+      public function resource($resourcePath)
       {
-          $this->resource = rtrim($resource, '\\/');
+          $this->resourcePath = rtrim($resourcePath, '\\/');
 
           return $this;
       }
@@ -102,7 +102,7 @@ class Renderer implements RendererInterface
           extract($this->variables, EXTR_SKIP);
 
           ob_start();
-          require_once($this->getTemplate($this->template));
+          require_once($this->resourcePath($this->template));
           return ob_get_clean();
       }
 
@@ -128,34 +128,41 @@ class Renderer implements RendererInterface
        * @return string
        * @throws ViewException
       */
-      public function getTemplate(string $filename)
+      public function getResource(string $filename)
       {
-          $template = $this->resourceTemplate($filename);
+          $templatePath = $this->resourcePath($filename);
 
-          if(! file_exists($template)) {
-              throw new ViewException(sprintf('view file %s does not exist!', $template));
+          if(! file_exists($templatePath)) {
+              throw new ViewException(sprintf('view file %s does not exist!', $templatePath));
           }
 
-          return $template;
+          return $templatePath;
       }
 
 
       /**
        * @param string $template
        * @return string
+       * @throws ViewException
       */
-      public function resourceTemplate(string $template)
+      public function resourcePath(string $template)
       {
-          return $this->resource . DIRECTORY_SEPARATOR . $this->resolveTemplatePath($template);
+          $templatePath = $this->targetResource . DIRECTORY_SEPARATOR . $this->resolvePath($template);
+
+          if(! file_exists($templatePath)) {
+              throw new ViewException(sprintf('view file %s does not exist!', $templatePath));
+          }
+
+          return $templatePath;
      }
 
 
      /**
-      * @param $template
+      * @param $targetPath
       * @return string|string[]
      */
-     protected function resolveTemplatePath($template)
+     protected function resolvePath($targetPath)
      {
-         return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, ltrim($template, '\\/'));
+         return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, ltrim($targetPath, '\\/'));
      }
 }
