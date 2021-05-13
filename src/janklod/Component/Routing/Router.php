@@ -21,6 +21,12 @@ class Router extends RouteCollection
     const OPTION_PARAM_NAME_PREFIX      = 'name';
 
 
+    /**
+     * @var string
+    */
+    protected $regexp;
+
+
 
     /**
      * route patterns
@@ -37,6 +43,17 @@ class Router extends RouteCollection
     */
     protected $options = [];
 
+
+    /**
+     * @param string $regexp
+     * @return $this
+    */
+    public function setGlobalExpression(string $regexp)
+    {
+         $this->regexp = $regexp;
+
+         return $this;
+    }
 
 
 
@@ -144,7 +161,6 @@ class Router extends RouteCollection
         $target     = $this->resolveTarget($target);
         $middleware = $this->getOption(static::OPTION_PARAM_MIDDLEWARE, []);
         $prefixName = $this->getOption(static::OPTION_PARAM_NAME_PREFIX, '');
-
 
         $route = new Route($methods, $path, $target);
         $route->where($this->patterns);

@@ -33,4 +33,10 @@ class Response
 
         return $this;
     }
+
+
+    public function getContent()
+    {
+        return $this->content;
+    }
 }

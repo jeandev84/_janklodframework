@@ -88,4 +88,18 @@ dump($request->query->replace([
     'Username' => 'johndoe',
     'City' => 'Kurgan'
 ]));
-dd($request->query->all());
+
+dump($request->query->all());
+
+
+echo '<h2>Templating</h2>';
+
+$view = new \Jan\Component\Templating\Renderer(__DIR__.'/../views');
+
+$content = $view->render('auth/login.php', [
+    'username' => 'john',
+    'email'    => 'johndoe@gmail.com'
+]);
+
+$response = new \Jan\Component\Http\Response($content);
+echo $response->getContent();

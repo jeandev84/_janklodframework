@@ -18,7 +18,7 @@ class Renderer implements RendererInterface
        *
        * @var string
       */
-      protected $resourcePath;
+      protected $targetResource;
 
 
 
@@ -42,23 +42,23 @@ class Renderer implements RendererInterface
 
       /**
        * Renderer constructor.
-       * @param string $targetPath
+       * @param string $targetResource
       */
-      public function __construct(string $targetPath = '')
+      public function __construct(string $targetResource = '')
       {
-           if($targetPath) {
-               $this->resource($targetPath);
+           if($targetResource) {
+               $this->resource($targetResource);
            }
       }
 
 
       /**
-       * @param $resourcePath
+       * @param $targetResource
        * @return $this
       */
-      public function resource($resourcePath)
+      public function resource($targetResource)
       {
-          $this->resourcePath = rtrim($resourcePath, '\\/');
+          $this->targetResource = rtrim($targetResource, '\\/');
 
           return $this;
       }

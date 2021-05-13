@@ -8,12 +8,24 @@ namespace Jan\Component\Routing;
 */
 class Route implements \ArrayAccess
 {
+
+
     /**
      * route path
      *
      * @var string
-     */
+    */
     protected $path = '';
+
+
+
+    /**
+     * route pattern
+     *
+     * @var string
+    */
+    protected $pattern = '';
+
 
 
     /**
@@ -42,18 +54,18 @@ class Route implements \ArrayAccess
 
 
     /**
-     * route params
+     * route regex params
      *
      * @var array
-     */
-    protected $patterns  = [];
+    */
+    protected $params  = [];
 
 
     /**
      * methods using by route
      *
      * @var array
-     */
+    */
     protected $methods = [];
 
 
@@ -138,6 +150,18 @@ class Route implements \ArrayAccess
     public function setPath(string $path): Route
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+
+    /**
+     * @param string $pattern
+     * @return $this
+    */
+    public function setPattern(string $pattern)
+    {
+        $this->pattern = $pattern;
 
         return $this;
     }
@@ -275,15 +299,14 @@ class Route implements \ArrayAccess
 
 
 
-
     /**
      * get route params
      *
      * @return array
      */
-    public function getPatterns(): array
+    public function getParams(): array
     {
-        return $this->patterns;
+        return $this->params;
     }
 
 
@@ -297,7 +320,7 @@ class Route implements \ArrayAccess
     {
         foreach ($this->parseWhere($name, $regex) as $name => $regex)
         {
-            $this->patterns[$name] = $this->resolvePattern($regex);
+            $this->params[$name] = $this->resolveRegex($regex);
         }
 
         return $this;
@@ -416,12 +439,23 @@ class Route implements \ArrayAccess
      * @param $name
      * @return mixed
      */
-    public function getPattern($name): string
+    public function getParam($name): string
     {
-        return $this->patterns[$name] ?? '';
+        return $this->params[$name] ?? '';
     }
 
 
+    /**
+     * @return string
+    */
+    public function getPattern()
+    {
+         if($this->pattern) {
+             return $this->pattern;
+         }
+
+         return $this->generatePattern();
+    }
 
     /**
      * get route middlewares
@@ -462,7 +496,7 @@ class Route implements \ArrayAccess
     /**
      * set route options
      *
-     * @param array|null $options
+     * @param array $options
      * @return Route
      */
     public function addOptions(array $options): Route
@@ -477,7 +511,7 @@ class Route implements \ArrayAccess
      * @param $key
      * @param $value
      * @return Route
-     */
+    */
     public function setOption($key, $value): Route
     {
         $this->options[$key] = $value;
@@ -493,7 +527,7 @@ class Route implements \ArrayAccess
      *
      * @param string $method
      * @return bool
-     */
+    */
     public function matchMethod(string $method): bool
     {
         if(\in_array($method, $this->methods))
@@ -510,16 +544,19 @@ class Route implements \ArrayAccess
     /**
      * Determine if the given request uri is matched
      *
-     * @param string $path
+     * @param string $url
      * @return bool
      */
-    public function matchPath(string $path): bool
+    public function matchPath(string $url): bool
     {
-        if(preg_match($pattern = $this->generatePattern(), $this->resolveURL($path), $matches))
+        if(preg_match($pattern = $this->getPattern(), $this->resolveURL($url), $matches))
         {
-            $this->matches = $this->filterParams($matches);
+            $this->matches = $this->filterMatchedParams($matches);
 
-            $this->addOptions(compact('pattern', 'path'));
+            $this->addOptions([
+                'pattern'  => $pattern,
+                'url'      => $url
+            ]);
 
             return true;
         }
@@ -543,7 +580,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return $this|false|mixed
-     */
+    */
     public function call()
     {
         if(! is_callable($this->target))
@@ -586,9 +623,9 @@ class Route implements \ArrayAccess
     {
         $patterns = [];
 
-        if($this->patterns)
+        if($this->params)
         {
-            foreach ($this->patterns as $name => $regex)
+            foreach ($this->params as $name => $regex)
             {
                 $patterns[$name] = '(?P<'. $name .'>'. $regex . ')';
             }
@@ -633,6 +670,7 @@ class Route implements \ArrayAccess
             $path = explode('?', $path, 2)[0];
         }
 
+        $this->addOptions(compact('path'));
         return $this->removeTrailingSlashes($path);
     }
 
@@ -650,8 +688,8 @@ class Route implements \ArrayAccess
     /**
      * @param array $matches
      * @return array
-     */
-    protected function filterParams(array $matches): array
+    */
+    protected function filterMatchedParams(array $matches): array
     {
         return array_filter($matches, function ($key) {
 
@@ -679,7 +717,7 @@ class Route implements \ArrayAccess
      * @param $regex
      * @return string|string[]
     */
-    protected function resolvePattern($regex)
+    protected function resolveRegex($regex)
     {
         return str_replace('(', '(?:', $regex);
     }
