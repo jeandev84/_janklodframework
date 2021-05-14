@@ -321,7 +321,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $name
      * @return Route
-     */
+    */
     public function any(string $name): Route
     {
         return $this->where($name, '.*');
@@ -331,7 +331,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $name
      * @return $this|Route
-     */
+    */
     public function whereWord(string $name): Route
     {
         return $this->where($name, '\w+');
@@ -341,7 +341,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $name
      * @return $this|Route
-     */
+    */
     public function whereDigital(string $name): Route
     {
         return $this->where($name, '\d+');
@@ -349,20 +349,20 @@ class Route implements \ArrayAccess
 
 
     /**
-     * @param string $name
-     * @return Route
+      * @param string $name
+      * @return Route
      */
-    public function whereAlphaNumeric(string $name): Route
-    {
+     public function whereAlphaNumeric(string $name): Route
+     {
         return $this->where($name, '[a-z\-0-9]+'); // (\w+)
-    }
+     }
 
 
 
     /**
      * @param string $name
      * @return Route
-     */
+    */
     public function whereSlug(string $name): Route
     {
         return $this->where($name, '[a-z\-0-9]+'); // (\w+)
@@ -373,7 +373,7 @@ class Route implements \ArrayAccess
      * get route methods
      *
      * @return array
-     */
+    */
     public function getMethods(): array
     {
         return $this->methods;
@@ -383,8 +383,8 @@ class Route implements \ArrayAccess
     /**
      * @param string $separator
      * @return string
-     */
-    public function getMethodsToString($separator = '|'): string
+    */
+    public function getMethodToString($separator = '|'): string
     {
         return implode($separator, $this->getMethods());
     }
@@ -393,10 +393,10 @@ class Route implements \ArrayAccess
     /**
      * set route methods
      *
-     * @param array|string $methods
+     * @param array $methods
      * @return Route
      */
-    public function setMethods($methods): Route
+    public function setMethods(array $methods): Route
     {
         $this->methods = $methods;
 
@@ -409,7 +409,7 @@ class Route implements \ArrayAccess
      * get matches params
      *
      * @return array
-     */
+    */
     public function getMatches(): array
     {
         return $this->matches;
@@ -419,7 +419,7 @@ class Route implements \ArrayAccess
     /**
      * @param $name
      * @return mixed
-     */
+    */
     public function getParam($name): string
     {
         return $this->params[$name] ?? '';
@@ -430,7 +430,7 @@ class Route implements \ArrayAccess
      * get route middlewares
      *
      * @return array
-     */
+    */
     public function getMiddleware(): array
     {
         return $this->middleware;
@@ -442,7 +442,7 @@ class Route implements \ArrayAccess
      *
      * @param array|string $middleware
      * @return Route
-     */
+    */
     public function middleware($middleware): Route
     {
         $this->middleware = array_merge($this->middleware, (array) $middleware);
@@ -455,7 +455,7 @@ class Route implements \ArrayAccess
      * get options
      *
      * @return array
-     */
+    */
     public function getOptions(): array
     {
         return $this->options;
@@ -467,7 +467,7 @@ class Route implements \ArrayAccess
      *
      * @param array $options
      * @return Route
-     */
+    */
     public function addOptions(array $options): Route
     {
         $this->options = array_merge($this->options, $options);
@@ -515,7 +515,7 @@ class Route implements \ArrayAccess
      *
      * @param string $url
      * @return bool
-     */
+    */
     public function matchPath(string $url): bool
     {
         if(preg_match($pattern = $this->getPattern(), $this->resolveURL($url), $matches))
@@ -540,7 +540,7 @@ class Route implements \ArrayAccess
      * @param $requestMethod
      * @param $requestUri
      * @return bool
-     */
+    */
     public function match($requestMethod, $requestUri): bool
     {
         return $this->matchMethod($requestMethod) && $this->matchPath($requestUri);
@@ -567,7 +567,7 @@ class Route implements \ArrayAccess
      *
      * @param string $flag
      * @return string
-     */
+    */
     protected function getPattern(string $flag = 'i'): string
     {
         $pattern = $this->getResolvedPath();
@@ -587,7 +587,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return array
-     */
+    */
     public function resolvePatterns(): array
     {
         $patterns = [];
@@ -610,7 +610,7 @@ class Route implements \ArrayAccess
      *
      * @param array $params
      * @return string|string[]|null
-     */
+    */
     public function convertParams(array $params = [])
     {
         $path = $this->getPath();
@@ -631,7 +631,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $path
      * @return string
-     */
+    */
     protected function resolveURL(string $path): string
     {
         if(stripos($path, '?') !== false)
@@ -647,7 +647,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $path
      * @return string
-     */
+    */
     protected function removeTrailingSlashes(string $path): string
     {
         return trim($path, '\\/');
@@ -675,7 +675,7 @@ class Route implements \ArrayAccess
      * @param $name
      * @param $regex
      * @return array
-     */
+    */
     protected function parseWhere($name, $regex): array
     {
         return \is_array($name) ? $name : [$name => $regex];

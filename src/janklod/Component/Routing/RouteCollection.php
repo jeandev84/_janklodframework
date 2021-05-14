@@ -127,7 +127,7 @@ class RouteCollection
         foreach ($this->getRoutes() as $route)
         {
             /** @var Route $route */
-            $routes[$route->getMethodsToString()][] = $route;
+            $routes[$route->getMethodToString()][] = $route;
         }
 
         return $routes;
