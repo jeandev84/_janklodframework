@@ -20,15 +20,6 @@ class Route implements \ArrayAccess
 
 
     /**
-     * route pattern
-     *
-     * @var string
-    */
-    protected $pattern = '';
-
-
-
-    /**
      * route handle
      *
      * @var mixed
@@ -155,23 +146,12 @@ class Route implements \ArrayAccess
     }
 
 
-    /**
-     * @param string $pattern
-     * @return $this
-    */
-    public function setPattern(string $pattern)
-    {
-        $this->pattern = $pattern;
-
-        return $this;
-    }
-
 
     /**
      * get route target
      *
      * @return mixed
-     */
+    */
     public function getTarget()
     {
         return $this->target;
@@ -446,18 +426,6 @@ class Route implements \ArrayAccess
 
 
     /**
-     * @return string
-    */
-    public function getPattern()
-    {
-         if($this->pattern) {
-             return $this->pattern;
-         }
-
-         return $this->generatePattern();
-    }
-
-    /**
      * get route middlewares
      *
      * @return array
@@ -599,7 +567,7 @@ class Route implements \ArrayAccess
      * @param string $flag
      * @return string
      */
-    protected function generatePattern(string $flag = 'i'): string
+    protected function getPattern(string $flag = 'i'): string
     {
         $pattern = $this->getResolvedPath();
 

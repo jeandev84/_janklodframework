@@ -83,6 +83,7 @@ dump($container->getBindings());
 echo '<h2>Request</h2>';
 dump($request);
 
+/*
 dump($request->query->replace([
     'Email' => 'johndoe@gmail.com',
     'Username' => 'johndoe',
@@ -90,7 +91,7 @@ dump($request->query->replace([
 ]));
 
 dump($request->query->all());
-
+*/
 
 echo '<h2>Templating</h2>';
 

@@ -21,12 +21,6 @@ class Router extends RouteCollection
     const OPTION_PARAM_NAME_PREFIX      = 'name';
 
 
-    /**
-     * @var string
-    */
-    protected $regexp;
-
-
 
     /**
      * route patterns
@@ -42,19 +36,6 @@ class Router extends RouteCollection
      * @var array
     */
     protected $options = [];
-
-
-    /**
-     * @param string $regexp
-     * @return $this
-    */
-    public function setGlobalExpression(string $regexp)
-    {
-         $this->regexp = $regexp;
-
-         return $this;
-    }
-
 
 
     /**
@@ -118,7 +99,7 @@ class Router extends RouteCollection
     */
     public function any(string $path, $target, string $name = null): Route
     {
-        return $this->map('GET|POST|PUT|DELETE', $path, $target, $name);
+        return $this->map('GET|POST|PUT|DELETE|PATCH', $path, $target, $name);
     }
 
 

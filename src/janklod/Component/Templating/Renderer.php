@@ -123,22 +123,6 @@ class Renderer implements RendererInterface
                      ->renderHtml();
      }
 
-      /**
-       * @param string $filename
-       * @return string
-       * @throws ViewException
-      */
-      public function getResource(string $filename)
-      {
-          $templatePath = $this->resourcePath($filename);
-
-          if(! file_exists($templatePath)) {
-              throw new ViewException(sprintf('view file %s does not exist!', $templatePath));
-          }
-
-          return $templatePath;
-      }
-
 
       /**
        * @param string $template
