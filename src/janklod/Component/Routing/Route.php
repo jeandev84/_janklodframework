@@ -23,15 +23,16 @@ class Route implements \ArrayAccess
      * route handle
      *
      * @var mixed
-     */
+    */
     protected $target;
+
 
 
     /**
      * route name
      *
      * @var string
-     */
+    */
     protected $name = '';
 
 
@@ -39,7 +40,7 @@ class Route implements \ArrayAccess
      * route prefix name
      *
      * @var string
-     */
+    */
     protected $prefixName = '';
 
 
@@ -73,7 +74,7 @@ class Route implements \ArrayAccess
      * route middleware
      *
      * @var array
-     */
+    */
     protected $middleware = [];
 
 
@@ -82,7 +83,7 @@ class Route implements \ArrayAccess
      * route options
      *
      * @var array
-     */
+    */
     protected $options = [];
 
 
@@ -90,7 +91,7 @@ class Route implements \ArrayAccess
 
     /**
      * @var array
-     */
+    */
     protected static $nameList = [];
 
 
@@ -102,12 +103,12 @@ class Route implements \ArrayAccess
      * @param array $methods
      * @param string $path
      * @param mixed|null $target
-     */
+    */
     public function __construct(array $methods = [], string $path = '', $target = null)
     {
-        $this->setMethods($methods);
-        $this->setPath($path);
-        $this->setTarget($target);
+         $this->setMethods($methods);
+         $this->setPath($path);
+         $this->setTarget($target);
     }
 
 
@@ -116,7 +117,7 @@ class Route implements \ArrayAccess
      * get route path
      *
      * @return string
-     */
+    */
     public function getPath(): string
     {
         return $this->path;
@@ -125,7 +126,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return string
-     */
+    */
     public function getResolvedPath(): string
     {
         return $this->removeTrailingSlashes($this->path);
@@ -137,7 +138,7 @@ class Route implements \ArrayAccess
      *
      * @param string $path
      * @return Route
-     */
+    */
     public function setPath(string $path): Route
     {
         $this->path = $path;
@@ -163,7 +164,7 @@ class Route implements \ArrayAccess
      *
      * @param mixed $target
      * @return Route
-     */
+    */
     public function setTarget($target): Route
     {
         $this->target = $target;
@@ -174,7 +175,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return string
-     */
+    */
     public function getPrefixName(): string
     {
         return $this->prefixName;
@@ -184,7 +185,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $prefixName
      * @return Route
-     */
+    */
     public function setPrefixName(string $prefixName): Route
     {
         $this->prefixName = $prefixName;
@@ -196,7 +197,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return string
-     */
+    */
     public function getName(): string
     {
         return $this->name;
@@ -209,7 +210,7 @@ class Route implements \ArrayAccess
      *
      * @param string $name
      * @return Route
-     */
+    */
     public function name(string $name): Route
     {
         $name = $this->prefixName . $name;
@@ -232,7 +233,7 @@ class Route implements \ArrayAccess
 
     /**
      * @return array
-     */
+    */
     public static function nameList(): array
     {
         return static::$nameList;
@@ -243,7 +244,7 @@ class Route implements \ArrayAccess
     /**
      * @param $name
      * @return bool
-     */
+    */
     public static function exists($name): bool
     {
         return \array_key_exists($name, static::$nameList);
@@ -254,7 +255,7 @@ class Route implements \ArrayAccess
     /**
      * @param $name
      * @return Route
-     */
+    */
     public static function retrieve($name): Route
     {
         return static::$nameList[$name];
@@ -266,7 +267,7 @@ class Route implements \ArrayAccess
      * @param $name
      * @param array $params
      * @return false|string|string[]|null
-     */
+    */
     public static function generate($name, $params = [])
     {
         if(! static::exists($name))
@@ -283,7 +284,7 @@ class Route implements \ArrayAccess
      * get route params
      *
      * @return array
-     */
+    */
     public function getParams(): array
     {
         return $this->params;
@@ -295,7 +296,7 @@ class Route implements \ArrayAccess
      * @param $name
      * @param $regex
      * @return $this
-     */
+    */
     public function where($name, $regex = null): Route
     {
         foreach ($this->parseWhere($name, $regex) as $name => $regex)
@@ -310,7 +311,7 @@ class Route implements \ArrayAccess
     /**
      * @param string $name
      * @return $this
-     */
+    */
     public function whereNumeric(string $name): Route
     {
         return $this->where($name, '[0-9]+'); // (\d+)

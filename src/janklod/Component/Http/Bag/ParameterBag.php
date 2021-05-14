@@ -36,6 +36,17 @@ class ParameterBag
 
        /**
         * @param $key
+        * @param $value
+       */
+       public function set($key, $value)
+       {
+             $this->params[$key] = $value;
+       }
+
+
+
+       /**
+        * @param $key
         * @param null $default
         * @return mixed|null
        */
@@ -51,17 +62,5 @@ class ParameterBag
        public function all()
        {
            return $this->params;
-       }
-
-
-       /**
-        * @param array $data
-        * @return ParameterBag
-       */
-       public function replace(array $data)
-       {
-           // TODO replace data keys by params keys.
-           $params = [];
-           return new static($params);
        }
 }

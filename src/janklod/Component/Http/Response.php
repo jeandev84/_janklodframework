@@ -29,7 +29,7 @@ class Response
     */
     public function setHeaders($headers)
     {
-        $this->headers = $headers;
+        $this->headers = array_merge($this->headers, $headers);
 
         return $this;
     }
@@ -38,5 +38,31 @@ class Response
     public function getContent()
     {
         return $this->content;
+    }
+
+
+    public function send()
+    {
+
+    }
+
+
+    /**
+     * @return void
+    */
+    public function sendHeaders()
+    {
+        foreach ($this->headers as $key => $value) {
+             header($key .' : '. $value);
+        }
+    }
+
+
+    /**
+     * @return void
+    */
+    public function sendBody()
+    {
+        echo $this->getContent();
     }
 }
