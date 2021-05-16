@@ -32,26 +32,28 @@ $routeCollection->add($route3)->setTarget(function () {
 dump($routeCollection->getRoutes());
 */
 
-echo "<h2>Routing</h2>";
 $router = new \Jan\Component\Routing\Router();
 
-$router->get('/', 'HomeController@index')
-       ->middleware(\App\Middleware\Authenticated::class)
-;
+$router->get('/', 'PageController@index');
 
-$router->get('/about', 'HomeController@about');
-$router->get('/contact', 'HomeController@contact');
-$router->post('/contact', 'HomeController@contact');
+$router->get('/about', 'PageController@about');
+$router->get('/contact', 'PageController@contact');
+$router->post('/contact', 'PageController@contact');
 
 $router->get('/foo', function () {
    return 'Foo!';
 });
 
-$router->get('/post/{id}', 'PostController@show')
-       ->where('id', '\d+')
-;
 
-dump($router->getRoutes());
+$router->get('/posts', 'PostController@index');
+$router->get('/post/{id}', 'PostController@show')
+       ->where('id', '\d+');
+
+$router->map('GET|POST','/auth/login', 'Auth\\LoginController@index')
+       ->middleware(\App\Middleware\Authenticated::class);
+
+/* dump($router->getRoutes()); */
+/* dump($router->getRoutesByMethod()); */
 
 
 $request = \Jan\Component\Http\Request::createFromGlobals();
@@ -62,14 +64,25 @@ $route = $router->match($request->getMethod(), $uri = $request->getRequestUri())
 
 
 if(! $route) {
-    dd('Route : '. $uri . ' not found!');
+    call_user_func_array('App\\Controller\\Exception\NotFoundController::index', [$uri]);
+    exit;
 }
 
 
 /* dump($route['middleware']); */
-dump($route);
+/* dump($route); */
+
+if(is_string($route['target'])) {
+    list($controllerClassName, $action) = explode('@', $route['target']);
+    $controllerClass = 'App\\Controller\\'. $controllerClassName;
+    $controller = new $controllerClass();
+    $content = call_user_func_array([$controller, $action], $route['matches']);
+    $response = new \Jan\Component\Http\Response($content);
+    $response->sendBody();
+}
 
 
+/*
 echo "<h2>Container</h2>";
 
 
@@ -83,7 +96,6 @@ dump($container->getBindings());
 echo '<h2>Request</h2>';
 dump($request);
 
-/*
 dump($request->query->replace([
     'Email' => 'johndoe@gmail.com',
     'Username' => 'johndoe',
@@ -91,7 +103,7 @@ dump($request->query->replace([
 ]));
 
 dump($request->query->all());
-*/
+
 
 echo '<h2>Templating</h2>';
 
@@ -104,3 +116,4 @@ $content = $view->render('auth/login.php', [
 
 $response = new \Jan\Component\Http\Response($content);
 echo $response->getContent();
+*/
