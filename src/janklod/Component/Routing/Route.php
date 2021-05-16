@@ -215,8 +215,7 @@ class Route implements \ArrayAccess
     {
         $name = $this->prefixName . $name;
 
-        if(static::exists($name))
-        {
+        if(static::exists($name)) {
             throw new \RuntimeException(
                 sprintf('This route name (%s) already taken!', $name)
             );

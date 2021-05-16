@@ -31,12 +31,6 @@ class RouteCollection
      protected $resources = [];
 
 
-     /**
-      * @var array
-     */
-     protected $namedRoutes = [];
-
-
 
      /**
       * @param Route $route
@@ -104,15 +98,14 @@ class RouteCollection
      */
      public function getNamedRoutes(): array
      {
-          foreach ($this->getRoutes() as $route)
-          {
-               if($name = $route->getName())
-               {
-                   $this->namedRoutes[$name] = $route;
+          $namedRoutes = [];
+          foreach ($this->getRoutes() as $route) {
+               if($name = $route->getName()) {
+                   $namedRoutes[$name] = $route;
                }
           }
 
-          return $this->namedRoutes;
+          return $namedRoutes;
      }
 
 
