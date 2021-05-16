@@ -9,10 +9,6 @@ namespace Jan\Component\Routing;
 class RouteCollection
 {
 
-
-    protected $isGroup = false;
-
-
      /**
       * @var array
      */
@@ -67,33 +63,66 @@ class RouteCollection
 
 
      /**
-      * @return bool
+      * @param array $groups
+      * @return RouteCollection
      */
-     public function getGroupStatus()
+     public function addGroup(array $groups): static
      {
-          return $this->isGroup;
+          foreach ($groups as $route) {
+              $this->add($route);
+          }
+
+          $this->groups[] = $groups;
+
+          return $this;
      }
 
 
      /**
-      * @param Route $route
+      * get resources
+      *
+      * @return array
      */
-     public function addGroup(Route $route)
+     public function getGroups()
      {
-          $this->groups[] = $this->add($route);
+         return $this->groups;
+     }
+
+
+
+     /**
+      * add resources
+      *
+      * @param array $resources
+      * @return RouteCollection
+     */
+     public function addResource(array $resources): static
+     {
+         foreach ($resources as $route) {
+             $this->add($route);
+         }
+
+         $this->resources[] = $resources;
+
+         return $this;
      }
 
 
      /**
-      * @param Route $route
+      * get resources
+      *
+      * @return array
      */
-     public function addResource(Route $route)
+     public function getResources()
      {
-         $this->resources[] = $this->add($route);
+         return $this->resources;
      }
 
 
+
      /**
+      * get named routes
+      *
       * @return array
      */
      public function getNamedRoutes(): array
@@ -104,13 +133,14 @@ class RouteCollection
                    $namedRoutes[$name] = $route;
                }
           }
-
           return $namedRoutes;
      }
 
 
 
     /**
+     * get routes by method
+     *
      * @return array
     */
     public function getRoutesByMethod(): array
