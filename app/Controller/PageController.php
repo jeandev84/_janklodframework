@@ -13,9 +13,9 @@ class PageController
 
        protected $view;
 
-       public function __construct()
+       public function __construct(Renderer $view)
        {
-           $this->view = new Renderer(__DIR__.'/../../views');
+           $this->view = $view;
        }
 
        public function index()

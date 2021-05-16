@@ -1,6 +1,7 @@
 <?php
 
 use Jan\Component\Routing\Route;
+use Jan\Component\Templating\Renderer;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -75,7 +76,9 @@ if(! $route) {
 if(is_string($route['target'])) {
     list($controllerClassName, $action) = explode('@', $route['target']);
     $controllerClass = 'App\\Controller\\'. $controllerClassName;
-    $controller = new $controllerClass();
+
+    $view = new Renderer(__DIR__.'/../views');
+    $controller = new $controllerClass($view);
     $content = call_user_func_array([$controller, $action], $route['matches']);
     $response = new \Jan\Component\Http\Response($content);
     $response->sendBody();
