@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 
+use Jan\Component\Http\Response;
 use Jan\Component\Templating\Renderer;
 
 /**
@@ -13,13 +14,30 @@ class PageController
 
        protected $view;
 
-       public function __construct(Renderer $view)
+       protected $response;
+
+       public function __construct(Renderer $view, Response $response)
        {
            $this->view = $view;
+           $this->response = $response;
        }
 
        public function index()
        {
+//           dump('Test');
+
+           /*
+            $this->response->setHeaders([
+               'Content-Type' => 'application/json'
+           ]);
+
+           return \json_encode([
+               'success' => true,
+               'message' => 'home page loaded!'
+           ]);
+           */
+
+           // $this->response->setStatus(301);
            return $this->view->render('page/index.php');
        }
 
@@ -33,5 +51,19 @@ class PageController
        public function contact()
        {
            return $this->view->render('page/contact.php');
+       }
+
+
+       public function userItems()
+       {
+           dump('Test');
+           $this->response->setHeaders([
+               'Content-Type' => 'application/json'
+           ]);
+
+           return \json_encode([
+               'success' => true,
+               'message' => 'home page loaded!'
+           ]);
        }
 }

@@ -63,7 +63,8 @@ $request = \Jan\Component\Http\Request::createFromGlobals();
 /* $route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']); */
 $route = $router->match($request->getMethod(), $uri = $request->getRequestUri());
 
-
+// create response
+$response = new \Jan\Component\Http\Response();
 if(! $route) {
     call_user_func_array('App\\Controller\\Exception\NotFoundController::index', [$uri]);
     exit;
@@ -73,23 +74,28 @@ if(! $route) {
 /* dump($route['middleware']); */
 /* dump($route); */
 
+$content = null;
+
+// send body ( terminate )
 if(is_callable($route['target'])) {
     $content = call_user_func_array($route['target'], $route['matches']);
-    $response = new \Jan\Component\Http\Response($content);
-    $response->setStatus(200);
 } else {
     if(is_string($route['target'])) {
         list($controllerClassName, $action) = explode('@', $route['target']);
         $controllerClass = 'App\\Controller\\'. $controllerClassName;
         $viewObject = new Renderer(__DIR__.'/../views');
-        $controller = new $controllerClass($viewObject);
+        $controller = new $controllerClass($viewObject, $response);
         $content = call_user_func_array([$controller, $action], $route['matches']);
-        $response = new \Jan\Component\Http\Response($content);
-        $response->setStatus(200);
-        $response->sendBody();
     }
 }
 
+$response->setStatus(301);
+$response->send();
+
+dump($response->getStatus());
+/* dump($response->getHeaders()); */
+$response->setContent($content);
+$response->sendBody();
 
 
 

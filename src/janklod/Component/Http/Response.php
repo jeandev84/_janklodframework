@@ -15,6 +15,21 @@ class Response
 
     protected $headers = [];
 
+
+
+    protected $messages = [
+       200 => 'OK',
+       201 => 'Created',
+       301 => 'Redirect permanently',
+       404 => 'Not found'
+    ];
+
+    /**
+     * Response constructor.
+     * @param null $content
+     * @param int $status
+     * @param array $headers
+    */
     public function __construct($content = null, $status = 200, $headers = [])
     {
          $this->content = $content;
@@ -35,6 +50,12 @@ class Response
     }
 
 
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+
     /**
      * @param $headers
      * @return $this
@@ -42,6 +63,27 @@ class Response
     public function setHeaders($headers)
     {
         $this->headers = array_merge($this->headers, $headers);
+
+        return $this;
+    }
+
+
+    /**
+     * @return array
+    */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+
+    /**
+     * @param $content
+     * @return $this
+   */
+    public function setContent($content)
+    {
+        $this->content = $content;
 
         return $this;
     }
@@ -63,9 +105,11 @@ class Response
         }
 
         if(\php_sapi_name() != 'cli') {
-            $this->sendStatusMessage();
-            $this->sendHeaders();
+             // dd('OK');
         }
+
+        $this->sendHeaders();
+        $this->sendStatusMessage();
     }
 
 
@@ -74,20 +118,22 @@ class Response
     */
     public function sendStatusMessage()
     {
-         http_response_code($this->status);
-
+         // http_response_code($this->getStatus());
+         header('HTTP/1.0 '. $this->getStatus() . ' '. $this->messages[$this->status] ?? '');
          return $this;
     }
 
 
     /**
-     * @return void
+     * @return $this
     */
     public function sendHeaders()
     {
         foreach ($this->headers as $key => $value) {
              header($key .' : '. $value);
         }
+
+        return $this;
     }
 
 
