@@ -24,6 +24,18 @@ class Response
 
 
     /**
+     * @param $status
+     * @return $this
+    */
+    public function setStatus($status)
+    {
+         $this->status = $status;
+
+         return $this;
+    }
+
+
+    /**
      * @param $headers
      * @return $this
     */
@@ -41,9 +53,30 @@ class Response
     }
 
 
+    /**
+     * @return $this
+    */
     public function send()
     {
+        if(\headers_sent()) {
+           return $this;
+        }
 
+        if(\php_sapi_name() != 'cli') {
+            $this->sendStatusMessage();
+            $this->sendHeaders();
+        }
+    }
+
+
+    /**
+     * @return $this
+    */
+    public function sendStatusMessage()
+    {
+         http_response_code($this->status);
+
+         return $this;
     }
 
 

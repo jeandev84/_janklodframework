@@ -14,15 +14,16 @@ class LoginController
 
     public function __construct(Renderer $view)
     {
-        $this->view = $view;
+         $this->view = $view;
     }
+
 
     public function index()
     {
         if(! empty($_POST)) {
-
-            dd($_POST);
+            dump($_POST);
         }
+
         return $this->view->render('auth/login.php');
     }
 }

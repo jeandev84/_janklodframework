@@ -76,11 +76,11 @@ if(! $route) {
 if(is_string($route['target'])) {
     list($controllerClassName, $action) = explode('@', $route['target']);
     $controllerClass = 'App\\Controller\\'. $controllerClassName;
-
-    $view = new Renderer(__DIR__.'/../views');
-    $controller = new $controllerClass($view);
+    $viewObject = new Renderer(__DIR__.'/../views');
+    $controller = new $controllerClass($viewObject);
     $content = call_user_func_array([$controller, $action], $route['matches']);
     $response = new \Jan\Component\Http\Response($content);
+    $response->setStatus(200);
     $response->sendBody();
 }
 
