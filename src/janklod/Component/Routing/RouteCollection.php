@@ -66,7 +66,7 @@ class RouteCollection
       * @param array $groups
       * @return RouteCollection
      */
-     public function addGroup(array $groups): static
+     public function addGroup(array $groups)
      {
           foreach ($groups as $route) {
               $this->add($route);
@@ -96,7 +96,7 @@ class RouteCollection
       * @param array $resources
       * @return RouteCollection
      */
-     public function addResource(array $resources): static
+     public function addResource(array $resources)
      {
          foreach ($resources as $route) {
              $this->add($route);

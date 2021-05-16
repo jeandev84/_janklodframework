@@ -73,16 +73,24 @@ if(! $route) {
 /* dump($route['middleware']); */
 /* dump($route); */
 
-if(is_string($route['target'])) {
-    list($controllerClassName, $action) = explode('@', $route['target']);
-    $controllerClass = 'App\\Controller\\'. $controllerClassName;
-    $viewObject = new Renderer(__DIR__.'/../views');
-    $controller = new $controllerClass($viewObject);
-    $content = call_user_func_array([$controller, $action], $route['matches']);
+if(is_callable($route['target'])) {
+    $content = call_user_func_array($route['target'], $route['matches']);
     $response = new \Jan\Component\Http\Response($content);
     $response->setStatus(200);
-    $response->sendBody();
+} else {
+    if(is_string($route['target'])) {
+        list($controllerClassName, $action) = explode('@', $route['target']);
+        $controllerClass = 'App\\Controller\\'. $controllerClassName;
+        $viewObject = new Renderer(__DIR__.'/../views');
+        $controller = new $controllerClass($viewObject);
+        $content = call_user_func_array([$controller, $action], $route['matches']);
+        $response = new \Jan\Component\Http\Response($content);
+        $response->setStatus(200);
+        $response->sendBody();
+    }
 }
+
+
 
 
 /*
