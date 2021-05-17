@@ -38,6 +38,20 @@ class Router extends RouteCollection
     protected $options = [];
 
 
+
+    /**
+     * @var RouteParameter
+    */
+    protected $routeParameters;
+
+
+    public function __construct()
+    {
+         $this->routeParameters = new RouteParameter();
+    }
+
+
+
     /**
      * @param string $path
      * @param $target

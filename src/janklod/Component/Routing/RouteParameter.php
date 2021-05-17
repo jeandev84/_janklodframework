@@ -9,9 +9,9 @@ namespace Jan\Component\Routing;
 class RouteParameter
 {
 
-    const KEY_OPTION_PARAM_PATH_PREFIX  = 'path.prefix';
-    const KEY_OPTION_PARAM_NAMESPACE    = 'namespace';
-    const KEY_OPTION_PARAM_NAME_PREFIX  = 'name.prefix';
+    const PATH_PREFIX                   = 'path.prefix';
+    const NAMESPACE_PREFIX              = 'namespace';
+    const NAME_PREFIX                   = 'name.prefix';
 
     const OPTION_PARAM_PATH_PREFIX      = 'prefix';
     const OPTION_PARAM_NAMESPACE        = 'namespace';
@@ -19,23 +19,77 @@ class RouteParameter
     const OPTION_PARAM_NAME_PREFIX      = 'name';
 
 
-    protected $router;
+    /**
+     * @var array
+    */
+    protected $options = [];
 
 
-    public function __construct(Router $router)
+    /**
+     * @param array $options
+    */
+    protected function addOptions(array $options)
     {
-         $this->router = $router;
+        $this->options = array_merge($this->options, $options);
+    }
+
+
+    /**
+     * @param $key
+     * @param $value
+    */
+    public function addOption($key, $value)
+    {
+        $this->options[$key] = $value;
+    }
+
+
+    /**
+     * flush parameters and options
+    */
+    public function flush()
+    {
+        $this->options = [];
+    }
+
+
+    /**
+     * @param $key
+    */
+    protected function removeOption($key)
+    {
+        unset($this->options[$key]);
     }
 
 
 
     /**
-     * @param $index
+     * Get option by given param
+     *
+     * @param $key
+     * @param null $default
+     * @return mixed|void|null
+    */
+    public function getOption($key, $default = null)
+    {
+        foreach (array_keys($this->options) as $index) {
+            if(! $this->isValidOption($index)) {
+                return new \Exception(sprintf('%s is not available this param', $index));
+            }
+        }
+
+        return $this->options[$key] ?? $default;
+    }
+
+
+
+    /**
+     * @param $key
      * @return bool
     */
-    protected static function isOptionValid($index): bool
+    protected function isValidOption($key): bool
     {
-        return \in_array($index, static::getAvailable());
+        return \in_array($key, $this->getOptionParams());
     }
 
 
@@ -43,7 +97,7 @@ class RouteParameter
     /**
      * @return string[]
      */
-    protected static function getAvailable(): array
+    protected function getOptionParams(): array
     {
         return [
             self::OPTION_PARAM_PATH_PREFIX,
@@ -61,9 +115,9 @@ class RouteParameter
     protected function configureParameters(): array
     {
         return $this->resolvedRouteOptionParameters([
-            self::KEY_OPTION_PARAM_PATH_PREFIX => $this->router->getOption(self::OPTION_PARAM_PATH_PREFIX),
-            self::KEY_OPTION_PARAM_NAME_PREFIX => $this->router->getOption(self::OPTION_PARAM_NAME_PREFIX),
-            self::KEY_OPTION_PARAM_NAMESPACE   => $this->router->getOption(self::OPTION_PARAM_NAMESPACE)
+            self::PATH_PREFIX => $this->getOption(self::OPTION_PARAM_PATH_PREFIX),
+            self::NAME_PREFIX => $this->getOption(self::OPTION_PARAM_NAME_PREFIX),
+            self::NAMESPACE_PREFIX   => $this->getOption(self::OPTION_PARAM_NAMESPACE)
         ]);
     }
 
