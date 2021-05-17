@@ -72,7 +72,7 @@ if(! $route) {
 
 
 /* dump($route['middleware']); */
-/* dump($route); */
+dump($route);
 
 $content = null;
 
@@ -92,7 +92,7 @@ if(is_callable($route['target'])) {
 $response->setStatus(301);
 $response->send();
 
-dump($response->getStatus());
+/* dump($response->getStatus()); */
 /* dump($response->getHeaders()); */
 $response->setContent($content);
 $response->sendBody();

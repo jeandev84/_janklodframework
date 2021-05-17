@@ -133,7 +133,18 @@ class RouteCollection
                    $namedRoutes[$name] = $route;
                }
           }
+
           return $namedRoutes;
+     }
+
+
+     /**
+      * @param $routeName
+      * @return Route
+     */
+     public function getNamedRoute($routeName): Route
+     {
+         return $this->getNamedRoutes()[$routeName];
      }
 
 

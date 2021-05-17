@@ -11,16 +11,6 @@ use Closure;
 class Router extends RouteCollection
 {
 
-    const KEY_OPTION_PARAM_PATH_PREFIX  = 'path.prefix';
-    const KEY_OPTION_PARAM_NAMESPACE    = 'namespace';
-    const KEY_OPTION_PARAM_NAME_PREFIX  = 'name.prefix';
-
-    const OPTION_PARAM_PATH_PREFIX      = 'prefix';
-    const OPTION_PARAM_NAMESPACE        = 'namespace';
-    const OPTION_PARAM_MIDDLEWARE       = 'middleware';
-    const OPTION_PARAM_NAME_PREFIX      = 'name';
-
-
 
     /**
      * route patterns
@@ -33,18 +23,16 @@ class Router extends RouteCollection
 
 
     /**
-     * @var array
-    */
-    protected $options = [];
-
-
-
-    /**
      * @var RouteParameter
     */
     protected $routeParameters;
 
 
+
+
+    /**
+     * Router constructor.
+    */
     public function __construct()
     {
          $this->routeParameters = new RouteParameter();
@@ -131,12 +119,12 @@ class Router extends RouteCollection
         */
 
         if($options) {
-            $this->addOptions($options);
+            $this->routeParameters->addOptions($options);
         }
 
         /* $this->isRouteGroup = true; */
         $routeCallback($this);
-        $this->flushOptions();
+        $this->routeParameters->flushOptions();
     }
 
 
@@ -149,17 +137,17 @@ class Router extends RouteCollection
     */
     public function map($methods, string $path, $target, string $name = null): Route
     {
-        $methods    = $this->resolveMethods($methods);
-        $path       = $this->resolvePath($path);
-        $target     = $this->resolveTarget($target);
-        $middleware = $this->getOption(static::OPTION_PARAM_MIDDLEWARE, []);
-        $prefixName = $this->getOption(static::OPTION_PARAM_NAME_PREFIX, '');
+        $methods    = $this->routeParameters->resolvedMethods($methods);
+        $path       = $this->routeParameters->resolvedPath($path);
+        $target     = $this->routeParameters->resolvedTarget($target);
+        $middleware = $this->routeParameters->getMiddlewares();
+        $prefixName = $this->routeParameters->getPrefixName();
 
         $route = new Route($methods, $path, $target);
         $route->where($this->patterns);
         $route->setPrefixName($prefixName);
         $route->middleware($middleware);
-        $route->addOptions($this->routeParameters());
+        $route->addOptions($this->routeParameters->configureParameters());
 
         if($name) {
             $route->name($name);
@@ -196,7 +184,7 @@ class Router extends RouteCollection
      */
     public function name(string $name): Router
     {
-        $this->addOptions(compact('name'));
+        $this->routeParameters->addOption(RouteParameter::PARAM_NAME_PREFIX, $name);
 
         return $this;
     }
@@ -208,7 +196,7 @@ class Router extends RouteCollection
     */
     public function middleware(array $middleware): Router
     {
-        $this->addOptions(compact('middleware'));
+        $this->routeParameters->addOption(RouteParameter::PARAM_MIDDLEWARE, $middleware);
 
         return $this;
     }
@@ -220,7 +208,7 @@ class Router extends RouteCollection
      */
     public function prefix($prefix): Router
     {
-        $this->addOptions(compact('prefix'));
+        $this->routeParameters->addOption(RouteParameter::PARAM_PATH_PREFIX, $prefix);
 
         return $this;
     }
@@ -232,7 +220,7 @@ class Router extends RouteCollection
      */
     public function namespace($namespace): Router
     {
-        $this->addOptions(compact('namespace'));
+        $this->routeParameters->addOption(RouteParameter::PARAM_NAMESPACE, $namespace);
 
         return $this;
     }
@@ -256,7 +244,7 @@ class Router extends RouteCollection
         */
 
         if(! $closure) {
-            $this->addOptions($options);
+            $this->routeParameters->addOptions($options);
             return $this;
         }
 
@@ -272,12 +260,8 @@ class Router extends RouteCollection
     public function match(string $requestMethod, string $requestUri)
     {
         foreach ($this->getRoutes() as $route) {
-
-            /** @var Route $route */
-            if($route instanceof Route) {
-                if($route->match($requestMethod, $requestUri)) {
-                    return $route;
-                }
+            if($route->match($requestMethod, $requestUri)) {
+                return $route;
             }
         }
 
@@ -297,8 +281,7 @@ class Router extends RouteCollection
             return false;
         }
 
-        /** @var Route $route */
-        $route = $this->namedRoutes[$name];
+        $route = $this->getNamedRoute($name);
 
         return $route->convertParams($params);
     }
@@ -312,187 +295,5 @@ class Router extends RouteCollection
     public function has($name): bool
     {
         return \array_key_exists($name, $this->getNamedRoutes());
-    }
-
-
-    /** Resolvers methods **/
-
-
-    /**
-     * resolve methods
-     *
-     * @param $methods
-     * @return array
-     */
-    protected function resolveMethods($methods): array
-    {
-        if(is_string($methods)) {
-            $methods = explode('|', $methods);
-        }
-        return (array) $methods;
-    }
-
-
-
-    /**
-     * Resolve route path
-     *
-     * @param string $path
-     * @return string
-    */
-    protected function resolvePath(string $path): string
-    {
-        if($prefix = $this->getOption(static::OPTION_PARAM_PATH_PREFIX)) {
-            $path = rtrim($prefix, '/') . '/'. ltrim($path, '/');
-        }
-        return $path;
-    }
-
-
-    /**
-     * Resolve handle
-     *
-     * @param $target
-     * @return mixed
-    */
-    protected function resolveTarget($target)
-    {
-        if(\is_string($target) && $namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
-            $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
-        }
-        return $target;
-    }
-
-
-
-    /**
-     * @param $name
-     * @return string
-    */
-    protected function resolveName($name): string
-    {
-        if($prefixed = $this->getOption(static::OPTION_PARAM_NAME_PREFIX)) {
-            return $prefixed . $name;
-        }
-        return $name;
-    }
-
-
-
-    /**
-     * Get option by given param
-     *
-     * @param $key
-     * @param null $default
-     * @return mixed|void|null
-    */
-    public function getOption($key, $default = null)
-    {
-        foreach (array_keys($this->options) as $index) {
-            if(! $this->isValidOption($index)) {
-                return new \Exception(sprintf('%s is not available this param', $index));
-            }
-        }
-
-        return $this->options[$key] ?? $default;
-    }
-
-
-
-    /**
-     * @param $key
-    */
-    protected function removeOption($key)
-    {
-        unset($this->options[$key]);
-    }
-
-
-
-    /**
-     * @param array $options
-    */
-    protected function addOptions(array $options)
-    {
-         $this->options = array_merge($this->options, $options);
-    }
-
-
-    /**
-     * remove all options options
-     *
-     * @return void
-    */
-    protected function flushOptions()
-    {
-        $this->options = [];
-    }
-
-
-    /**
-     * Flush all parameters
-    */
-    protected function flush()
-    {
-        $this->flushOptions();
-        // ...
-    }
-
-
-
-    /**
-     * @param $index
-     * @return bool
-    */
-    protected function isValidOption($index): bool
-    {
-        return \in_array($index, $this->getAllowedOptionParams());
-    }
-
-
-
-    /**
-     * @return string[]
-    */
-    protected function getAllowedOptionParams(): array
-    {
-        return [
-            self::OPTION_PARAM_PATH_PREFIX,
-            self::OPTION_PARAM_NAMESPACE,
-            self::OPTION_PARAM_MIDDLEWARE,
-            self::OPTION_PARAM_NAME_PREFIX
-        ];
-    }
-
-
-
-    /**
-     * @return string[]
-    */
-    protected function routeParameters(): array
-    {
-        return $this->resolvedRouteOptionParameters([
-            self::KEY_OPTION_PARAM_PATH_PREFIX => $this->getOption(self::OPTION_PARAM_PATH_PREFIX),
-            self::KEY_OPTION_PARAM_NAME_PREFIX => $this->getOption(self::OPTION_PARAM_NAME_PREFIX),
-            self::KEY_OPTION_PARAM_NAMESPACE   => $this->getOption(self::OPTION_PARAM_NAMESPACE)
-        ]);
-    }
-
-
-
-    /**
-     * @param array $routeOptions
-     * @return array
-    */
-    protected function resolvedRouteOptionParameters(array $routeOptions): array
-    {
-        $parameters = [];
-
-        foreach ($routeOptions as $key => $value)
-        {
-            $parameters[$key] = (string) $value;
-        }
-
-        return $parameters;
     }
 }
