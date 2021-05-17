@@ -372,7 +372,7 @@ class Router extends RouteCollection
      * @param null $default
      * @return mixed|void|null
     */
-    protected function getOption($key, $default = null)
+    public function getOption($key, $default = null)
     {
         foreach (array_keys($this->options) as $index) {
             if(! $this->isValidOption($index)) {
