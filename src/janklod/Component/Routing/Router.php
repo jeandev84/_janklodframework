@@ -308,8 +308,17 @@ class Router extends RouteCollection
             return false;
         }
 
-        $route = $this->getRoute($name);
+        return $this->getRoute($name)->convertParams($params);
+    }
 
-        return $this->baseUrl . '/' . $route->convertParams($params);
+
+    /**
+      * @param string $name
+      * @param array $params
+      * @return string
+    */
+    public function url(string $name, array $params = [])
+    {
+        return $this->baseUrl . $this->generate($name, $params);
     }
 }

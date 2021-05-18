@@ -106,9 +106,9 @@ class Route implements \ArrayAccess
     */
     public function __construct(array $methods = [], string $path = '', $target = null)
     {
-         $this->setMethods($methods);
-         $this->setPath($path);
-         $this->setTarget($target);
+          $this->setMethods($methods);
+          $this->setPath($path);
+          $this->setTarget($target);
     }
 
 
@@ -367,7 +367,6 @@ class Route implements \ArrayAccess
         return $this->where($name, '[a-z\-0-9]+'); // (\w+)
     }
 
-
     /**
      * get route methods
      *
@@ -622,7 +621,7 @@ class Route implements \ArrayAccess
             }
         }
 
-        return $path;
+        return '/'. rtrim($path, '/');
     }
 
 
