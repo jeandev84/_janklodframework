@@ -2,6 +2,8 @@
 namespace Jan\Component\Routing;
 
 
+use Jan\Component\Routing\Contract\ParameterConvertorContract;
+
 /**
  * Class Route
  * @package Jan\Component\Routing
@@ -88,6 +90,12 @@ class Route implements \ArrayAccess
 
 
 
+    /**
+     * @var ParameterConvertorContract
+    */
+    protected $convertorParam;
+
+
 
     /**
      * @var array
@@ -109,6 +117,15 @@ class Route implements \ArrayAccess
           $this->setMethods($methods);
           $this->setPath($path);
           $this->setTarget($target);
+    }
+
+
+    /**
+     * @param ParameterConvertorContract $convertorParam
+    */
+    public function setConvertorParam(ParameterConvertorContract $convertorParam)
+    {
+         $this->convertorParam = $convertorParam;
     }
 
 
@@ -171,6 +188,7 @@ class Route implements \ArrayAccess
 
         return $this;
     }
+
 
 
     /**
@@ -570,7 +588,7 @@ class Route implements \ArrayAccess
     {
         $pattern = $this->getResolvedPath();
 
-        if($patterns = $this->resolvePatterns())
+        if($patterns = $this->getPatterns())
         {
             foreach($patterns as $k => $v)
             {
@@ -586,14 +604,23 @@ class Route implements \ArrayAccess
     /**
      * @return array
     */
-    public function resolvePatterns(): array
+    public function getPatterns(): array
     {
-        $patterns = [];
+        if($this->convertorParam) {
+            return $this->convertorParam->convertPatterns($this->params);
+        }
 
-        if($this->params)
-        {
-            foreach ($this->params as $name => $regex)
-            {
+        return $this->getDefaultPatterns();
+    }
+
+
+    /**
+     * @return array
+    */
+    protected function getDefaultPatterns()
+    {
+        if($this->params) {
+            foreach ($this->params as $name => $regex) {
                 $patterns[$name] = '(?P<'. $name .'>'. $regex . ')';
             }
         }
@@ -607,21 +634,34 @@ class Route implements \ArrayAccess
      * Convert path params
      *
      * @param array $params
-     * @return string|string[]|null
+     * @return string
     */
     public function convertParams(array $params = [])
     {
-        $path = $this->getPath();
+        $path = $this->removeRightTrailingShashes($this->getPath(), '/');
 
-        if($params)
-        {
-            foreach($params as $k => $v)
-            {
+        if($this->convertorParam) {
+            return $this->convertorParam->convertPath($path, $params);
+        }
+
+        return $this->getDefaultConvertParams($path, $params);
+    }
+
+
+    /**
+     * @param string $path
+     * @param array $params
+     * @return string|null
+    */
+    protected function getDefaultConvertParams(string $path, array $params = [])
+    {
+        if($params) {
+            foreach($params as $k => $v) {
                 $path = preg_replace(["#{{$k}}#", "#{{$k}.?}#"], $v, $path);
             }
         }
 
-        return '/'. rtrim($path, '/');
+        return (string) $path;
     }
 
 
@@ -649,6 +689,17 @@ class Route implements \ArrayAccess
     protected function removeTrailingSlashes(string $path): string
     {
         return trim($path, '\\/');
+    }
+
+
+    /**
+     * @param string $path
+     * @param string $prefix
+     * @return string
+    */
+    protected function removeRightTrailingShashes(string $path, string $prefix = '')
+    {
+        return $prefix . rtrim($path, '\\/');
     }
 
 
