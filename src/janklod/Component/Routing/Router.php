@@ -128,6 +128,25 @@ class Router extends RouteCollection
     }
 
 
+
+    /**
+     * @param Closure|null $closure
+     * @param array $options
+     * @return Router
+     */
+    public function api(Closure $closure = null, array $options = []): Router
+    {
+        $options = $this->routeParameters->configureApiDefaultOptions($options);
+
+        if(! $closure) {
+            $this->routeParameters->addOptions($options);
+            return $this;
+        }
+
+        $this->group($closure, $options);
+    }
+
+
     /**
      * @param array|string $methods
      * @param string $path
@@ -181,10 +200,10 @@ class Router extends RouteCollection
     /**
      * @param string $name
      * @return $this
-     */
+    */
     public function name(string $name): Router
     {
-        $this->routeParameters->addOption(RouteParameter::PARAM_NAME_PREFIX, $name);
+        $this->routeParameters->addOptionName($name);
 
         return $this;
     }
@@ -196,7 +215,7 @@ class Router extends RouteCollection
     */
     public function middleware(array $middleware): Router
     {
-        $this->routeParameters->addOption(RouteParameter::PARAM_MIDDLEWARE, $middleware);
+        $this->routeParameters->addOptionMiddleware($middleware);
 
         return $this;
     }
@@ -208,7 +227,7 @@ class Router extends RouteCollection
      */
     public function prefix($prefix): Router
     {
-        $this->routeParameters->addOption(RouteParameter::PARAM_PATH_PREFIX, $prefix);
+        $this->routeParameters->addOptionPrefix($prefix);
 
         return $this;
     }
@@ -220,36 +239,11 @@ class Router extends RouteCollection
      */
     public function namespace($namespace): Router
     {
-        $this->routeParameters->addOption(RouteParameter::PARAM_NAMESPACE, $namespace);
+        $this->routeParameters->addOptionNamespace($namespace);
 
         return $this;
     }
 
-
-    /**
-     * @param Closure|null $closure
-     * @param array $options
-     * @return Router
-     */
-    public function api(Closure $closure = null, array $options = []): Router
-    {
-        if(! isset($options[self::OPTION_PARAM_PATH_PREFIX])) {
-            $options[self::OPTION_PARAM_PATH_PREFIX] = 'api';
-        }
-
-        /*
-        $options = [
-            self::OPTION_PARAM_PATH_PREFIX => $options[self::OPTION_PARAM_PATH_PREFIX] ?? 'api'
-        ];
-        */
-
-        if(! $closure) {
-            $this->routeParameters->addOptions($options);
-            return $this;
-        }
-
-        $this->group($closure, $options);
-    }
 
 
     /**

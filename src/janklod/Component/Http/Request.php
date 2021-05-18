@@ -11,7 +11,10 @@ use Jan\Component\Http\Bag\ParameterBag;
 class Request
 {
 
-    public $query;
+    public $queryParams;
+
+
+    public $request;
 
 
     protected $method = 'GET';
@@ -22,7 +25,8 @@ class Request
 
     public function __construct()
     {
-        $this->query = new ParameterBag($_GET);
+        $this->queryParams = new ParameterBag($_GET);
+        $this->request = new ParameterBag($_POST);
     }
 
 
@@ -37,6 +41,13 @@ class Request
         $request->requestUri = $_SERVER['REQUEST_URI'];
 
         return $request;
+    }
+
+
+
+    public function setMethod($method)
+    {
+        $this->method = $method;
     }
 
 

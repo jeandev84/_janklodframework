@@ -13,10 +13,10 @@ class RouteParameter
     const NAMESPACE_PREFIX       = '_namespace';
     const NAME_PREFIX            = '_name_prefix';
 
-    const PARAM_PATH_PREFIX      = 'prefix';
-    const PARAM_NAMESPACE        = 'namespace';
-    const PARAM_MIDDLEWARE       = 'middleware';
-    const PARAM_NAME_PREFIX      = 'name';
+    const OPTION_PARAM_PATH_PREFIX  = 'prefix';
+    const OPTION_PARAM_NAMESPACE    = 'namespace';
+    const OPTION_PARAM_MIDDLEWARE   = 'middleware';
+    const OPTION_PARAM_NAME_PREFIX  = 'name';
 
 
     /**
@@ -44,6 +44,40 @@ class RouteParameter
     }
 
 
+    /**
+     * @param string $name
+    */
+    public function addOptionName(string $name)
+    {
+        $this->addOption(static::OPTION_PARAM_NAME_PREFIX, $name);
+    }
+
+
+    /***
+     * @param array $middleware
+    */
+    public function addOptionMiddleware(array $middleware)
+    {
+        $this->addOption(static::OPTION_PARAM_MIDDLEWARE, $middleware);
+    }
+
+
+    /**
+     * @param string $prefix
+    */
+    public function addOptionPrefix(string $prefix)
+    {
+        $this->addOption(static::OPTION_PARAM_PATH_PREFIX, $prefix);
+    }
+
+
+    /**
+     * @param string $namespace
+    */
+    public function addOptionNamespace(string $namespace)
+    {
+        $this->addOption(static::OPTION_PARAM_NAMESPACE, $namespace);
+    }
 
     /**
      * remove all options options
@@ -113,7 +147,7 @@ class RouteParameter
     */
     public function resolvedPath($path)
     {
-        if($prefix = $this->getOption(static::PARAM_PATH_PREFIX)) {
+        if($prefix = $this->getOption(static::OPTION_PARAM_PATH_PREFIX)) {
             $path = rtrim($prefix, '/') . '/'. ltrim($path, '/');
         }
         return $path;
@@ -129,7 +163,7 @@ class RouteParameter
     */
     public function resolvedTarget($target)
     {
-        if(\is_string($target) && $namespace = $this->getOption(static::PARAM_NAMESPACE)) {
+        if(\is_string($target) && $namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
             $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
         }
         return $target;
@@ -143,7 +177,7 @@ class RouteParameter
     */
     public function resolvedName($name): string
     {
-        if($prefixed = $this->getOption(static::PARAM_NAME_PREFIX)) {
+        if($prefixed = $this->getOption(static::OPTION_PARAM_NAME_PREFIX)) {
             return $prefixed . $name;
         }
         return $name;
@@ -155,7 +189,7 @@ class RouteParameter
     */
     public function getMiddlewares()
     {
-        return $this->getOption(self::PARAM_MIDDLEWARE, []);
+        return $this->getOption(self::OPTION_PARAM_MIDDLEWARE, []);
     }
 
 
@@ -164,9 +198,22 @@ class RouteParameter
     */
     public function getPrefixName()
     {
-        return $this->getOption(static::PARAM_NAME_PREFIX, '');
+        return $this->getOption(static::OPTION_PARAM_NAME_PREFIX, '');
     }
 
+
+    /**
+     * @param array $options
+     * @return array
+    */
+    public function configureApiDefaultOptions(array $options)
+    {
+        if(! isset($options[self::OPTION_PARAM_PATH_PREFIX])) {
+            $options[self::OPTION_PARAM_PATH_PREFIX] = 'api';
+        }
+
+        return $options;
+    }
 
 
     /**
@@ -186,10 +233,10 @@ class RouteParameter
     protected function getOptionParams(): array
     {
         return [
-            self::PARAM_PATH_PREFIX,
-            self::PARAM_NAMESPACE,
-            self::PARAM_MIDDLEWARE,
-            self::PARAM_NAME_PREFIX
+            self::OPTION_PARAM_PATH_PREFIX,
+            self::OPTION_PARAM_NAMESPACE,
+            self::OPTION_PARAM_MIDDLEWARE,
+            self::OPTION_PARAM_NAME_PREFIX
         ];
     }
 
@@ -201,9 +248,9 @@ class RouteParameter
     public function configureParameters(): array
     {
         return [
-            self::PATH_PREFIX      => (string) $this->getOption(self::PARAM_PATH_PREFIX),
-            self::NAME_PREFIX      => (string) $this->getOption(self::PARAM_NAME_PREFIX),
-            self::NAMESPACE_PREFIX => (string) $this->getOption(self::PARAM_NAMESPACE)
+            self::PATH_PREFIX      => (string) $this->getOption(self::OPTION_PARAM_PATH_PREFIX),
+            self::NAME_PREFIX      => (string) $this->getOption(self::OPTION_PARAM_NAME_PREFIX),
+            self::NAMESPACE_PREFIX => (string) $this->getOption(self::OPTION_PARAM_NAMESPACE)
         ];
     }
 }

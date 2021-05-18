@@ -85,7 +85,7 @@ if(is_callable($route['target'])) {
         $controllerClass = 'App\\Controller\\'. $controllerClassName;
         $viewObject = new Renderer(__DIR__.'/../views');
         $controller = new $controllerClass($viewObject, $response);
-        $content = call_user_func_array([$controller, $action], $route['matches']);
+        $content = call_user_func_array([$controller, $action], [$request, $route['matches']]);
     }
 }
 

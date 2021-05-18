@@ -2,6 +2,7 @@
 namespace App\Controller\Auth;
 
 
+use Jan\Component\Http\Request;
 use Jan\Component\Templating\Renderer;
 
 /**
@@ -18,10 +19,11 @@ class LoginController
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
         if(! empty($_POST)) {
-            dump($_POST);
+            // dump($_POST);
+            dump($request->request->all());
         }
 
         return $this->view->render('auth/login.php');
