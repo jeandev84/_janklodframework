@@ -515,10 +515,8 @@ class Route implements \ArrayAccess
     */
     public function matchMethod(string $method): bool
     {
-        if(\in_array($method, $this->methods))
-        {
+        if(\in_array($method, $this->methods)) {
             $this->addOptions(compact('method'));
-
             return true;
         }
 
@@ -534,8 +532,8 @@ class Route implements \ArrayAccess
     */
     public function matchPath(string $url): bool
     {
-        if(preg_match($pattern = $this->getPattern(), $this->resolveURL($url), $matches))
-        {
+        if(preg_match($pattern = $this->getPattern(), $this->resolveURL($url), $matches)) {
+
             $this->matches = $this->filterMatchedParams($matches);
 
             $this->addOptions([
@@ -568,8 +566,7 @@ class Route implements \ArrayAccess
     */
     public function call()
     {
-        if(! is_callable($this->target))
-        {
+        if(! is_callable($this->target)) {
             return $this;
         }
 
@@ -588,10 +585,8 @@ class Route implements \ArrayAccess
     {
         $pattern = $this->getResolvedPath();
 
-        if($patterns = $this->getPatterns())
-        {
-            foreach($patterns as $k => $v)
-            {
+        if($patterns = $this->getPatterns()) {
+            foreach($patterns as $k => $v) {
                 $pattern = preg_replace(["#{{$k}}#", "#{{$k}.?}#"], [$v, '?'. $v .'?'], $pattern);
             }
         }
@@ -619,6 +614,8 @@ class Route implements \ArrayAccess
     */
     protected function getDefaultPatterns()
     {
+        $patterns = [];
+
         if($this->params) {
             foreach ($this->params as $name => $regex) {
                 $patterns[$name] = '(?P<'. $name .'>'. $regex . ')';
@@ -672,8 +669,7 @@ class Route implements \ArrayAccess
     */
     protected function resolveURL(string $path): string
     {
-        if(stripos($path, '?') !== false)
-        {
+        if(stripos($path, '?') !== false) {
             $path = explode('?', $path, 2)[0];
         }
 
