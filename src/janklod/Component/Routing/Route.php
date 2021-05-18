@@ -89,14 +89,6 @@ class Route implements \ArrayAccess
     protected $options = [];
 
 
-
-    /**
-     * @var ParameterConvertorContract
-    */
-    protected $convertorParam;
-
-
-
     /**
      * @var array
     */
@@ -117,15 +109,6 @@ class Route implements \ArrayAccess
           $this->setMethods($methods);
           $this->setPath($path);
           $this->setTarget($target);
-    }
-
-
-    /**
-     * @param ParameterConvertorContract $convertorParam
-    */
-    public function setConvertorParam(ParameterConvertorContract $convertorParam)
-    {
-         $this->convertorParam = $convertorParam;
     }
 
 
@@ -601,10 +584,6 @@ class Route implements \ArrayAccess
     */
     public function getPatterns(): array
     {
-        if($this->convertorParam) {
-            return $this->convertorParam->convertPatterns($this->params);
-        }
-
         return $this->getDefaultPatterns();
     }
 
@@ -636,11 +615,6 @@ class Route implements \ArrayAccess
     public function convertParams(array $params = [])
     {
         $path = $this->removeRightTrailingShashes($this->getPath(), '/');
-
-        if($this->convertorParam) {
-            return $this->convertorParam->convertPath($path, $params);
-        }
-
         return $this->getDefaultConvertParams($path, $params);
     }
 
