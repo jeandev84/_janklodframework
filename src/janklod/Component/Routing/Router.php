@@ -29,13 +29,46 @@ class Router extends RouteCollection
 
 
 
+    /**
+     * @var string
+    */
+    protected $baseUrl;
+
+
+
 
     /**
      * Router constructor.
     */
-    public function __construct()
+    public function __construct(string $baseUrl = '')
     {
+         if($baseUrl) {
+             $this->setUrl($baseUrl);
+         }
+
          $this->routeParameters = new RouteParameter();
+    }
+
+
+
+    /**
+     * @param string $baseUrl
+     * @return $this
+    */
+    public function setUrl(string $baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string
+    */
+    public function getUrl()
+    {
+        return $this->baseUrl;
     }
 
 
@@ -166,7 +199,7 @@ class Router extends RouteCollection
         $route->where($this->patterns);
         $route->setPrefixName($prefixName);
         $route->middleware($middleware);
-        $route->addOptions($this->routeParameters->configureParameters());
+        $route->addOptions($this->routeParameters->getDefaultConfiguration());
 
         if($name) {
             $route->name($name);
@@ -275,19 +308,8 @@ class Router extends RouteCollection
             return false;
         }
 
-        $route = $this->getNamedRoute($name);
+        $route = $this->getRoute($name);
 
-        return $route->convertParams($params);
-    }
-
-
-
-    /**
-     * @param $name
-     * @return bool
-    */
-    public function has($name): bool
-    {
-        return \array_key_exists($name, $this->getNamedRoutes());
+        return $this->baseUrl . '/' . $route->convertParams($params);
     }
 }

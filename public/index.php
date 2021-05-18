@@ -6,6 +6,17 @@ use Jan\Component\Templating\Renderer;
 require_once __DIR__.'/../vendor/autoload.php';
 
 
+// LOAD FUNCTIONS
+
+// Load environment
+putenv('APP_URL=http://localhost:8000');
+echo getenv('APP_URL');
+
+
+// LOAD ALL SERVICES PROVIDERS
+
+
+
 /*
 use Jan\Component\Routing\Route;
 use Jan\Component\Routing\RouteCollection;
@@ -35,26 +46,31 @@ dump($routeCollection->getRoutes());
 
 $router = new \Jan\Component\Routing\Router();
 
-$router->get('/', 'PageController@index');
+$router->get('/', 'PageController@index', 'home');
 
 $router->get('/about', 'PageController@about');
-$router->get('/contact', 'PageController@contact');
-$router->post('/contact', 'PageController@contact');
+$router->get('/contact', 'PageController@contact', 'contact.form');
+$router->post('/contact', 'PageController@contact', 'contact.send');
 
 $router->get('/foo', function () {
    return 'Foo!';
-});
+}, 'foo');
 
 
-$router->get('/posts', 'PostController@index');
+$router->get('/posts', 'PostController@index', 'post.list');
 $router->get('/post/{id}', 'PostController@show')
-       ->where('id', '\d+');
+       ->where('id', '\d+')
+       ->name('post.show')
+;
 
 $router->map('GET|POST','/auth/login', 'Auth\\LoginController@index')
+       ->name('auth.login')
        ->middleware(\App\Middleware\Authenticated::class);
 
 /* dump($router->getRoutes()); */
 /* dump($router->getRoutesByMethod()); */
+
+dump($router->getNamedRoutes());
 
 
 $request = \Jan\Component\Http\Request::createFromGlobals();

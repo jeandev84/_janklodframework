@@ -245,7 +245,7 @@ class RouteParameter
     /**
      * @return string[]
     */
-    public function configureParameters(): array
+    public function getDefaultConfiguration(): array
     {
         return [
             self::PATH_PREFIX      => (string) $this->getOption(self::OPTION_PARAM_PATH_PREFIX),
