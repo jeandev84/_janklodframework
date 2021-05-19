@@ -1,0 +1,19 @@
+<?php
+
+# APPLICATION
+
+// CONSTANTES
+define('BASE_URL', 'http://localhost:8000');
+define('BASE_PATH', __DIR__.'/../');
+define('SRC', __DIR__.'/../src');
+
+
+// LOAD FUNCTIONS
+require SRC .'/janklod/Foundation/helpers.php';
+
+
+// LOAD ROUTES
+require BASE_PATH .'/routes/web.php';
+
+
+// LOAD ALL SERVICES PROVIDERS

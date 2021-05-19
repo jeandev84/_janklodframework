@@ -46,6 +46,7 @@ class PostController
 
     public function show($id)
     {
+        $id = (int) $id;
         $post = static::getPost($id);
 
         if(! $post) {
