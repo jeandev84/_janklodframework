@@ -11,7 +11,9 @@ use Jan\Component\Http\Bag\HeaderBag;
 class Response
 {
 
-
+     /**
+       * @var string
+      */
       protected $protocol = 'HTTP/1.0';
 
 

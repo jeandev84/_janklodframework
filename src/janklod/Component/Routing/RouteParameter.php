@@ -134,7 +134,7 @@ class RouteParameter
     */
     public function resolveMethods($methods)
     {
-        if(is_string($methods)) {
+        if(\is_string($methods)) {
             $methods = explode('|', $methods);
         }
         return (array) $methods;
@@ -245,7 +245,7 @@ class RouteParameter
     /**
      * @return string[]
     */
-    public function getDefaultConfiguration(): array
+    public function getDefaultParams(): array
     {
         return [
             self::PATH_PREFIX      => (string) $this->getOption(self::OPTION_PARAM_PATH_PREFIX),

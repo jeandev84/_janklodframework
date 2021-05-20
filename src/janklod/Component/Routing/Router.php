@@ -196,10 +196,11 @@ class Router extends RouteCollection
         $prefixName = $this->routeParameters->getPrefixName();
 
         $route = new Route($methods, $path, $target);
+
         $route->where($this->patterns);
         $route->setPrefixName($prefixName);
         $route->middleware($middleware);
-        $route->addOptions($this->routeParameters->getDefaultConfiguration());
+        $route->addOptions($this->routeParameters->getDefaultParams());
 
         if($name) {
             $route->name($name);
