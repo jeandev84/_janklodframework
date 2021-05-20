@@ -9,5 +9,4 @@ namespace Jan\Component\Http\Bag;
 */
 class HeaderBag extends ParameterBag
 {
-
 }

@@ -84,4 +84,21 @@ class ParameterBag
       {
           $this->params = array_merge($this->params, $params);
       }
+
+
+     /**
+      * @param $key
+      * @param null $value
+      * @return array
+     */
+     public function parse($key, $value = null)
+     {
+           if(\is_string($key) && ! $value) {
+               $key = (array) $key;
+           }
+
+           $data = \is_array($key) ? $key : [$key => $value];
+
+           $this->merge($data);
+     }
 }

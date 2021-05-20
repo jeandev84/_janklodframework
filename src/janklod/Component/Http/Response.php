@@ -16,18 +16,25 @@ class Response implements ResponseInterface
 
 
      /**
+       * Http protocol version
+      *
        * @var string
       */
       protected $protocol = 'HTTP/1.0';
 
 
       /**
+       * Content of response
+       *
        * @var string
       */
       protected $content;
 
 
+
       /**
+        * Status code of response
+        *
         * @var int
       */
       protected $status;
@@ -35,6 +42,8 @@ class Response implements ResponseInterface
 
 
       /**
+        * Headers bag
+        *
         * @var HeaderBag
       */
       public $headers;
@@ -134,7 +143,9 @@ class Response implements ResponseInterface
       */
       public function setHeader($key, $value = null)
       {
-          $this->headers->set($key, $value);
+          $this->headers->parse($key, $value);
+
+          /* $this->headers->set($key, $value); */
       }
 
 
@@ -151,7 +162,18 @@ class Response implements ResponseInterface
 
 
 
-      /**
+     /**
+       * @return string
+     */
+     public function getMessage()
+     {
+        return $this->messages[$this->status] ?? '';
+     }
+
+
+
+
+    /**
        * @param $headers
        * @return Response
       */
@@ -221,8 +243,8 @@ class Response implements ResponseInterface
       */
       public function sendHeaders()
       {
-          foreach ($this->headers->all() as $key => $value) {
-              header($key .' : ' . $value);
+          foreach ($this->getHeaders() as $key => $value) {
+              header(\is_numeric($key) ? $value : $key .' : ' . $value);
           }
       }
 
@@ -241,22 +263,38 @@ class Response implements ResponseInterface
       /**
        * send status message of response
        *
-       * @return void
+       * @return mixed
       */
       public function sendStatusMessage()
       {
-         // TODO implements
+           if(! $message = $this->getMessage()) {
+                http_response_code($this->status);
+                return $this;
+           }
+
+           $this->setHeader(
+              sprintf('%s %s %s', $this->protocol, $this->status, $message)
+           );
       }
 
 
       /**
        * send all information to the server
        *
-       * @return void
+       * @return mixed
       */
       public function send()
       {
-         // TODO implements
+          if(\headers_sent()) {
+              return $this;
+          }
+
+          if (\php_sapi_name() == 'cli') {
+              return false;
+          }
+
+          $this->sendStatusMessage();
+          $this->sendHeaders();
       }
 
 
