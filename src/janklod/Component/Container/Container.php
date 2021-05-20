@@ -1,8 +1,9 @@
 <?php
-namespace Jan\Component\DependencyInjection;
+namespace Jan\Component\Container;
 
 
-use Jan\Component\DependencyInjection\Contract\ContainerInterface;
+use Jan\Component\Container\Contract\ContainerInterface;
+
 
 /**
  * Class Container
@@ -39,12 +40,26 @@ class Container implements ContainerInterface
              return $id;
         }
 
-        return $this->resolve($id);
+        try {
+            return $this->resolve($id);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
 
     public function resolve($id, $parameters = [])
     {
-        return [];
+        return $this->bindings[$id];
+    }
+
+
+
+    /**
+     * @return array
+    */
+    public function getBindings()
+    {
+        return $this->bindings;
     }
 }

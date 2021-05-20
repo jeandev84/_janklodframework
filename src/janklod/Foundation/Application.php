@@ -2,21 +2,25 @@
 namespace Jan\Foundation;
 
 
+use Jan\Component\Container\Container;
 use Jan\Component\Http\Request;
 use Jan\Component\Http\Response;
+
+
 
 /**
  * Class Application
  * @package Jan\Foundation
 */
-class Application
+class Application extends Container
 {
+
      /**
       * name of application
       *
       * @var string
      */
-     protected $name = 'JanKlodFramework';
+     protected $name = 'JanFramework';
 
 
      /**
@@ -27,12 +31,15 @@ class Application
      protected $version = '1.0';
 
 
+
+
      /**
       * base path of application
       *
       * @var string
      */
      protected $basePath;
+
 
 
      /**
@@ -100,6 +107,6 @@ class Application
      */
      public function terminate(Request $request, Response $response)
      {
-          // TODO Implement
+           // ...
      }
 }

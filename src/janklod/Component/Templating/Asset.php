@@ -161,26 +161,6 @@ class Asset
 
 
     /**
-     * Print html format
-     *
-     * @param array $resourceFiles
-     * @param string $blankTemplate
-     * @return string
-    */
-    protected function printHtml(array $resourceFiles, string $blankTemplate): string
-    {
-        $html = [];
-
-        foreach ($resourceFiles as $filename)
-        {
-            $html[] = sprintf($blankTemplate, $this->generateUrl($filename));
-        }
-
-        return join("\n", $html);
-    }
-
-
-    /**
      * @param $filename
      * @return string|string[]
     */
@@ -198,5 +178,26 @@ class Asset
     public function __toString(): string
     {
         return '';
+    }
+
+
+
+    /**
+     * Print html format
+     *
+     * @param array $resourceFiles
+     * @param string $blankTemplate
+     * @return string
+    */
+    protected function printHtml(array $resourceFiles, string $blankTemplate): string
+    {
+        $html = [];
+
+        foreach ($resourceFiles as $filename)
+        {
+            $html[] = sprintf($blankTemplate, $this->generateUrl($filename));
+        }
+
+        return join("\n", $html);
     }
 }

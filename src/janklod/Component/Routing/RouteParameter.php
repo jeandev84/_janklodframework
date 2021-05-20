@@ -9,9 +9,9 @@ namespace Jan\Component\Routing;
 class RouteParameter
 {
 
-    const PATH_PREFIX            = '_path_prefix';
-    const NAMESPACE_PREFIX       = '_namespace';
-    const NAME_PREFIX            = '_name_prefix';
+    const PATH_PREFIX               = '_path_prefix';
+    const NAMESPACE_PREFIX          = '_namespace';
+    const NAME_PREFIX               = '_name_prefix';
 
     const OPTION_PARAM_PATH_PREFIX  = 'prefix';
     const OPTION_PARAM_NAMESPACE    = 'namespace';
@@ -132,7 +132,7 @@ class RouteParameter
      * @param $methods
      * @return array
     */
-    public function resolvedMethods($methods)
+    public function resolveMethods($methods)
     {
         if(is_string($methods)) {
             $methods = explode('|', $methods);
@@ -145,7 +145,7 @@ class RouteParameter
      * @param $path
      * @return mixed|string
     */
-    public function resolvedPath($path)
+    public function resolvePath($path)
     {
         if($prefix = $this->getOption(static::OPTION_PARAM_PATH_PREFIX)) {
             $path = rtrim($prefix, '/') . '/'. ltrim($path, '/');
@@ -161,7 +161,7 @@ class RouteParameter
      * @param $target
      * @return mixed
     */
-    public function resolvedTarget($target)
+    public function resolveTarget($target)
     {
         if(\is_string($target) && $namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
             $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
@@ -171,17 +171,17 @@ class RouteParameter
 
 
 
-    /**
-     * @param $name
-     * @return string
-    */
-    public function resolvedName($name): string
-    {
-        if($prefixed = $this->getOption(static::OPTION_PARAM_NAME_PREFIX)) {
-            return $prefixed . $name;
-        }
-        return $name;
-    }
+//    /**
+//     * @param $name
+//     * @return string
+//    */
+//    public function resolveName($name): string
+//    {
+//        if($prefixed = $this->getOption(static::OPTION_PARAM_NAME_PREFIX)) {
+//            return $prefixed . $name;
+//        }
+//        return $name;
+//    }
 
 
     /**

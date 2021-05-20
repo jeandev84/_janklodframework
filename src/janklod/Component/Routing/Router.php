@@ -189,9 +189,9 @@ class Router extends RouteCollection
     */
     public function map($methods, string $path, $target, string $name = null): Route
     {
-        $methods    = $this->routeParameters->resolvedMethods($methods);
-        $path       = $this->routeParameters->resolvedPath($path);
-        $target     = $this->routeParameters->resolvedTarget($target);
+        $methods    = $this->routeParameters->resolveMethods($methods);
+        $path       = $this->routeParameters->resolvePath($path);
+        $target     = $this->routeParameters->resolveTarget($target);
         $middleware = $this->routeParameters->getMiddlewares();
         $prefixName = $this->routeParameters->getPrefixName();
 

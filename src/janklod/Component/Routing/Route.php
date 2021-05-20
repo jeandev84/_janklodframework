@@ -354,7 +354,8 @@ class Route implements \ArrayAccess
      */
      public function whereAlphaNumeric(string $name): Route
      {
-        return $this->where($name, '[a-z\-0-9]+'); // (\w+)
+        // [^[:alnum:]\-_]
+        return $this->where($name, '[^a-z_\-0-9]'); // (\w+)
      }
 
 
@@ -584,15 +585,6 @@ class Route implements \ArrayAccess
     */
     public function getPatterns(): array
     {
-        return $this->getDefaultPatterns();
-    }
-
-
-    /**
-     * @return array
-    */
-    protected function getDefaultPatterns()
-    {
         $patterns = [];
 
         if($this->params) {
@@ -615,17 +607,7 @@ class Route implements \ArrayAccess
     public function convertParams(array $params = [])
     {
         $path = $this->removeRightTrailingShashes($this->getPath(), '/');
-        return $this->getDefaultConvertParams($path, $params);
-    }
 
-
-    /**
-     * @param string $path
-     * @param array $params
-     * @return string|null
-    */
-    protected function getDefaultConvertParams(string $path, array $params = [])
-    {
         if($params) {
             foreach($params as $k => $v) {
                 $path = preg_replace(["#{{$k}}#", "#{{$k}.?}#"], $v, $path);
@@ -634,7 +616,6 @@ class Route implements \ArrayAccess
 
         return (string) $path;
     }
-
 
 
     /**

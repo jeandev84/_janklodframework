@@ -1,5 +1,5 @@
 <?php
-namespace Jan\Component\DependencyInjection\Contract;
+namespace Jan\Component\Container\Contract;
 
 /**
  * Interface ContainerInterface

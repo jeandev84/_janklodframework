@@ -11,54 +11,35 @@ use Jan\Component\Http\Bag\ParameterBag;
 class Request
 {
 
-    public $queryParams;
-
-
-    public $request;
-
-
-    protected $method = 'GET';
-
-
-    protected $requestUri;
-
-
-    public function __construct()
-    {
-        $this->queryParams = new ParameterBag($_GET);
-        $this->request = new ParameterBag($_POST);
-    }
+     /**
+      * query params from GET request
+      *
+      * @var array
+     */
+     public $queryParams;
 
 
 
-    /**
-     * @return static
-    */
-    public static function createFromGlobals()
-    {
-        $request = new static();
-        $request->method = $_SERVER['REQUEST_METHOD'];
-        $request->requestUri = $_SERVER['REQUEST_URI'];
-
-        return $request;
-    }
+     /**
+       * Request constructor.
+       * @param array $queryParams
+     */
+     public function __construct(array $queryParams = [])
+     {
+          $this->queryParams = new ParameterBag($queryParams);
+     }
 
 
 
-    public function setMethod($method)
-    {
-        $this->method = $method;
-    }
+     /**
+      * @return static
+     */
+     public static function createFromGlobals(): static
+     {
+          $request = new static($_GET);
 
+          $request->queryParams->set('search', 'foo');
 
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-
-    public function getRequestUri()
-    {
-        return $this->requestUri;
-    }
+          return $request;
+     }
 }
