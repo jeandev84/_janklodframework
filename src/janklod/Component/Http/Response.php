@@ -3,13 +3,17 @@ namespace Jan\Component\Http;
 
 
 use Jan\Component\Http\Bag\HeaderBag;
+use Jan\Component\Http\Contract\ResponseInterface;
 
 /**
  * Class Response
  * @package Jan\Component\Http
 */
-class Response
+class Response implements ResponseInterface
 {
+
+     use StatusCode;
+
 
      /**
        * @var string
@@ -206,7 +210,6 @@ class Response
       public function toJson(array $data): Response
       {
            $this->setHeader('Content-Type', 'application/json');
-
            return $this->withBody(\json_encode($data));
       }
 
@@ -218,7 +221,9 @@ class Response
       */
       public function sendHeaders()
       {
-          // TODO implements
+          foreach ($this->headers->all() as $key => $value) {
+              header($key .' : ' . $value);
+          }
       }
 
 
@@ -252,5 +257,14 @@ class Response
       public function send()
       {
          // TODO implements
+      }
+
+
+      /**
+       * @return string
+      */
+      public function __toString()
+      {
+           return (string) $this->getContent();
       }
 }

@@ -12,5 +12,5 @@ interface UrlMatcherInterface
       * @param string $url
       * @return mixed
      */
-     public function matchPath(string $url);
+     public function matchUrl(string $url);
 }

@@ -9,8 +9,8 @@ namespace Jan\Component\Routing\Contract;
 interface MethodMatcherInterface
 {
     /**
-     * @param string $method
+     * @param string $requestMethod
      * @return mixed
     */
-    public function matchMethod(string $method);
+    public function matchMethod(string $requestMethod);
 }
