@@ -3,7 +3,8 @@ namespace Jan\Component\Http;
 
 
 use Jan\Component\Http\Bag\HeaderBag;
-use Jan\Component\Http\Contract\ResponseInterface;
+
+
 
 /**
  * Class Response
