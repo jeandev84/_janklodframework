@@ -32,9 +32,9 @@ class Request
 
 
      /**
-      * @return static
+      * @return Request
      */
-     public static function createFromGlobals(): static
+     public static function createFromGlobals(): Request
      {
           $request = new static($_GET);
 
