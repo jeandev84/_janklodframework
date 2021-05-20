@@ -68,21 +68,20 @@ class ParameterBag
 
 
       /**
-        * @param $key
-        * @param int $default
-        * @return int
-      */
-      public function getInt($key, int $default = 0): int
-      {
-            return (int) $this->get($key, $default);
-      }
-
-
-      /**
        * @return array
       */
       public function all(): array
       {
           return $this->params;
+      }
+
+
+
+      /**
+       * @param array $params
+      */
+      public function merge(array $params)
+      {
+          $this->params = array_merge($this->params, $params);
       }
 }

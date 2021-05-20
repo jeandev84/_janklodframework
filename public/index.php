@@ -26,8 +26,8 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |-------------------------------------------------------
 */
 
-$kernel = $app->get(Jan\Contract\Http\Kernel::class);
-
+/* $kernel = $app->get(Jan\Contract\Http\Kernel::class); */
+$kernel = new \App\Http\Kernel();
 
 
 /*
@@ -37,9 +37,9 @@ $kernel = $app->get(Jan\Contract\Http\Kernel::class);
 */
 
 
-//$response = $kernel->handle(
-//    $request = \Jan\Component\Http\Request::createFromGlobals()
-//);
+$response = $kernel->handle(
+    $request = \Jan\Component\Http\Request::createFromGlobals()
+);
 
 
 
@@ -49,7 +49,7 @@ $kernel = $app->get(Jan\Contract\Http\Kernel::class);
 |-------------------------------------------------------
 */
 
-//$response->send();
+$response->send();
 
 
 
@@ -59,4 +59,4 @@ $kernel = $app->get(Jan\Contract\Http\Kernel::class);
 |-------------------------------------------------------
 */
 
-//$kernel->terminate($request, $response);
+$kernel->terminate($request, $response);
