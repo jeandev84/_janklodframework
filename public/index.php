@@ -39,7 +39,7 @@ $kernel = new \App\Http\Kernel();
 
 
 $response = $kernel->handle(
-    $request = \Jan\Component\Http\Request::fromGlobals()
+    $request = \Jan\Component\Http\Request::createFromGlobals()
 );
 
 

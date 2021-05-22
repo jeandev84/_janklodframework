@@ -79,12 +79,11 @@ class FileLocator
       /**
         * @param string $filename
         * @return mixed
-        * @throws FileLocatorException
-     */
+      */
       public function load(string $filename)
       {
            if(! $this->exists($filename)) {
-               throw new FileLocatorException('File cannot be loaded.');
+               return false;
            }
 
            return require $this->resource($filename);

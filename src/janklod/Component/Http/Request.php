@@ -281,10 +281,9 @@ class Request
      *
      * @return Request
     */
-    public static function fromGlobals(): Request
+    public static function createFromGlobals(): Request
     {
         $request =  static::factory($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
-
 
         if($request->hasContentTypeFormUrlEncoded() &&
            $request->requestMethodIn(['PUT', 'DELETE', 'PATCH'])
@@ -522,6 +521,10 @@ class Request
     */
     public function getContent(): ?string
     {
+        if(! $this->content) {
+            return file_get_contents('php://input');
+        }
+
         return $this->content;
     }
 
