@@ -8,6 +8,7 @@ use Jan\Component\Http\Bag\HeaderBag;
 use Jan\Component\Http\Bag\InputBag;
 use Jan\Component\Http\Bag\ParameterBag;
 use Jan\Component\Http\Bag\ServerBag;
+use Jan\Component\Http\Parser\UrlParser;
 use Jan\Component\Http\Session\Session;
 
 
@@ -151,20 +152,10 @@ class Request
 
 
     /**
-     * request uri
-     *
-     * @var
-     */
-    protected $requestUri;
+     * @var Url
+    */
+    public $url;
 
-
-
-    /**
-     * path info
-     *
-     * @var
-     */
-    protected $pathInfo;
 
 
 
@@ -172,25 +163,15 @@ class Request
      * Get base URL
      *
      * @var string
-     */
+    */
     protected $baseUrl;
 
 
 
 
     /**
-     * Get base path
-     *
-     * @var string
-     */
-    protected $basePath;
-
-
-
-
-    /**
      * Request method
-     */
+    */
     protected $method;
 
 
@@ -199,6 +180,7 @@ class Request
      * Format
      */
     protected $format = 'html';
+
 
 
 
@@ -222,7 +204,7 @@ class Request
         string $content = null
     )
     {
-          $this->init($queryParams, $request, $attributes, $cookies, $files, $server, $content);
+          $this->initialize($queryParams, $request, $attributes, $cookies, $files, $server, $content);
     }
 
 
@@ -236,7 +218,7 @@ class Request
      * @param array $server
      * @param string|null $content
     */
-    public function init(
+    public function initialize(
         array $queryParams = [],
         array $request = [],
         array $attributes = [],
@@ -253,19 +235,17 @@ class Request
         $this->files       = new FileBag($files);
         $this->server      = new ServerBag($server);
         $this->headers     = new HeaderBag($this->server->getHeaders());
-
         $this->content     = $content;
+
         $this->session     = new Session();
+        $this->method      = $this->server->get('REQUEST_METHOD');
         $this->languages   = null;
         $this->charsets    = null;
         $this->encodings   = null;
         $this->acceptableContentTypes = null;
-        $this->pathInfo    = null;
-        $this->requestUri  = null;
-        $this->baseUrl     = null;
-        $this->basePath    = null;
-        $this->method      = null;
         $this->format      = null;
+        $this->baseUrl     = $this->getBaseUrl();
+        $this->setUrl($this->getOriginalUrl());
     }
 
 
@@ -300,7 +280,7 @@ class Request
      * Request factory
      *
      * @return Request
-     */
+    */
     public static function fromGlobals(): Request
     {
         $request =  static::factory($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
@@ -343,18 +323,214 @@ class Request
 
 
     /**
+     * @param string $url
+     * @return $this
+    */
+    public function setUrl(string $url)
+    {
+        $this->url = new Url($url);
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return string
+    */
+    public function getOriginalUrl()
+    {
+        return implode([
+            $this->getBaseUrl(),
+            $this->server->getRequestUri()
+        ]);
+    }
+
+
+
+    /**
+     * @return string
+    */
+    public function getBaseUrl()
+    {
+        $str = $this->server->getScheme();
+        $user = $this->server->getAuthUser();
+        $pass = $this->server->getAuthPassword();
+        $str .= ($user && $pass) ? $user .':'. $pass .'@' : '';
+        $str .= $this->server->getHost();
+
+        if($fragment = $this->request->get('fragment')) {
+            $str .= $fragment;
+        }
+
+        if($fragment = $this->queryParams->get('fragment')) {
+            $str .= $fragment;
+        }
+
+//        // request URI
+//        if(strpos($str, "#") !== false) {
+//            $str .= explode("#", $str)[1];
+//        }
+
+        return $str;
+    }
+
+
+    /**
+     * put to the end of application
+     *
+     * Get javascript for get fragment (hash) ?email=jeanyao@ymail.com&region=Moscow#step1
+    */
+    public function scriptFragment()
+    {
+        echo "<script type='application/javascript'>
+            var forms = document.getElementsByTagName('form'); //get all forms on the site
+            for(var i=0; i<forms.length;i++) forms[i].addEventListener('submit', //to each form...
+            function(){ //add a submit pre-processing function that will:
+            var hidden = document.createElement('input');  //create an extra input element
+            hidden.setAttribute('type','hidden'); //set it to hidden so it doesn't break view 
+            hidden.setAttribute('name','fragment');  //set a name to get by it in PHP
+            hidden.setAttribute('value',window.location.hash); //set a value of #HASH
+            this.appendChild(hidden); //append it to the current form
+         });
+       </script>";
+    }
+
+    /**
+     * @return Url
+    */
+    public function getUrl(): Url
+    {
+        return $this->url;
+    }
+
+
+
+    /**
+     * @return string
+    */
+    public function getRequestUri()
+    {
+         return $this->server->get('REQUEST_URI');
+    }
+
+
+    /**
+     * @return string
+    */
+    public function getPathInfo()
+    {
+        return $this->server->get('PATH_INFO');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getDocumentRoot()
+    {
+        return $this->server->get('DOCUMENT_ROOT');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getPort()
+    {
+        return $this->server->get('SERVER_PORT');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getIpClient()
+    {
+        // must to had some verification
+        return $this->server->get('REMOTE_ADDR');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getIpPort()
+    {
+        return $this->server->get('REMOTE_PORT');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getScriptName()
+    {
+        return $this->server->get('SCRIPT_NAME');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getHeaders()
+    {
+        return $this->headers->all();
+    }
+
+
+
+    /**
+     * @param $key
+     * @return mixed|null
+    */
+    public function getHeader($key)
+    {
+        return $this->headers->get($key);
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getUserAgent()
+    {
+        return $this->server->get('HTTP_USER_AGENT');
+    }
+
+
+
+    /**
+     * @return mixed|null
+    */
+    public function getQueryString()
+    {
+         return $this->server->get('QUERY_STRING');
+    }
+
+
+
+    /**
      * @return string|null
-     */
+    */
     public function getContent(): ?string
     {
         return $this->content;
     }
 
 
+
     /**
      * @param string|null $content
      * @return Request
-     */
+    */
     public function setContent(?string $content): Request
     {
         $this->content = $content;
@@ -379,7 +555,7 @@ class Request
      * Get attribute
      * @param string $key
      * @return mixed
-     */
+    */
     public function getAttribute(string $key)
     {
         return $this->attributes[$key] ?? null;
@@ -389,53 +565,20 @@ class Request
 
     /**
      * @return array
-     */
+   */
     public function getAttributes(): array
     {
-        return $this->attributes;
+         return $this->attributes;
     }
-
 
 
 
     /**
      * @return bool
-     */
-    public function isSecure(): bool
-    {
-        $https = $this->server->get('HTTPS');
-        $port  = $this->server->get('SERVER_PORT');
-
-        return $https == 'on' && $port == 443;
-    }
-
-
-    /**
-     * @return bool
-     */
+    */
     public function isXhr(): bool
     {
         return $this->server->get('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest';
-    }
-
-
-    /**
-     * @param string $key
-     * @return mixed|null
-     */
-    public function get(string $key)
-    {
-
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getScheme(): string
-    {
-        return $this->isSecure() ? 'https' : 'http:';
     }
 
 
@@ -444,9 +587,17 @@ class Request
     */
     protected function hasContentTypeFormUrlEncoded(): bool
     {
-        return stripos($this->headers->get('CONTENT_TYPE', ''), 'application/x-www-form-urlencoded') === 0;
+        return stripos($this->getContentType(), 'application/x-www-form-urlencoded') === 0;
     }
 
+
+    /**
+     * @return mixed|null
+    */
+    protected function getContentType()
+    {
+         return $this->headers->get('CONTENT_TYPE', '');
+    }
 
 
     /**
@@ -455,7 +606,16 @@ class Request
     */
     protected function requestMethodIn(array $methods)
     {
-        return \in_array(strtoupper($this->server->get('REQUEST_METHOD', 'GET')), $methods);
+        return \in_array($this->toUpperMethod(), $methods);
+    }
+
+
+    /**
+     * @return string
+    */
+    protected function toUpperMethod()
+    {
+         return strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
     }
 
 }
