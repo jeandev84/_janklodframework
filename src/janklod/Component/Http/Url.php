@@ -2,7 +2,7 @@
 namespace Jan\Component\Http;
 
 
-use Jan\Component\Http\Parser\UrlParser;
+use Jan\Component\Http\Helper\UrlHelper;
 
 
 /**
@@ -71,15 +71,15 @@ class Url
      */
      public function __construct(string $url)
      {
-          $parser            =  new UrlParser($url);
-          $this->scheme      =  $parser->parse(PHP_URL_SCHEME);
-          $this->user        =  $parser->parse(PHP_URL_USER);
-          $this->password    =  $parser->parse(PHP_URL_PASS);
-          $this->host        =  $parser->parse(PHP_URL_HOST);
-          $this->port        =  $parser->parse(PHP_URL_PORT);
-          $this->path        =  $parser->parse(PHP_URL_PATH);
-          $this->queryString =  $parser->parse(PHP_URL_QUERY);
-          $this->fragment    =  $parser->parse(PHP_URL_FRAGMENT);
+          $parser            =  new UrlHelper($url);
+          $this->scheme      =  $parser->getParse(PHP_URL_SCHEME);
+          $this->user        =  $parser->getParse(PHP_URL_USER);
+          $this->password    =  $parser->getParse(PHP_URL_PASS);
+          $this->host        =  $parser->getParse(PHP_URL_HOST);
+          $this->port        =  $parser->getParse(PHP_URL_PORT);
+          $this->path        =  $parser->getParse(PHP_URL_PATH);
+          $this->queryString =  $parser->getParse(PHP_URL_QUERY);
+          $this->fragment    =  $parser->getParse(PHP_URL_FRAGMENT);
      }
 
 

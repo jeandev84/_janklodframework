@@ -1,13 +1,13 @@
 <?php
-namespace Jan\Component\Http\Parser;
+namespace Jan\Component\Http\Helper;
 
 
 /**
- * Class UrlParser
+ * Class UrlHelper
  *
- * @package Jan\Component\Http\Parser
+ * @package Jan\Component\Http\Helper
 */
-class UrlParser
+class UrlHelper
 {
 
       /**
@@ -40,7 +40,7 @@ class UrlParser
        * @param int $type
        * @return mixed
       */
-      public function parse(int $type)
+      public function getParse(int $type)
       {
           return parse_url($this->url, $type);
       }

@@ -8,7 +8,7 @@ use Jan\Component\Http\Bag\HeaderBag;
 use Jan\Component\Http\Bag\InputBag;
 use Jan\Component\Http\Bag\ParameterBag;
 use Jan\Component\Http\Bag\ServerBag;
-use Jan\Component\Http\Parser\UrlParser;
+use Jan\Component\Http\Parser\UrlHelper;
 use Jan\Component\Http\Session\Session;
 
 
