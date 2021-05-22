@@ -116,4 +116,15 @@ class ParameterBag
 
          unset($this->params[$key]);
      }
+
+
+     /**
+      * @param $key
+      * @param int $default
+      * @return int
+     */
+     public function getInt($key, int $default = 0): int
+     {
+         return (int) $this->get($key, $default);
+     }
 }

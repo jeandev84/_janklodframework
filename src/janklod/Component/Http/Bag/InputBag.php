@@ -8,13 +8,24 @@ namespace Jan\Component\Http\Bag;
 */
 class InputBag extends ParameterBag
 {
+
     /**
-     * @param $key
-     * @param int $default
-     * @return int
-    */
-    public function getInt($key, int $default = 0): int
+     * @param array $items
+     */
+    public function replace(array $items)
     {
-        return (int) $this->get($key, $default);
+        $this->params = [];
+        $this->add($items);
+    }
+
+
+    /**
+     * @param array $items
+    */
+    public function add(array $items)
+    {
+        foreach ($items as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 }
