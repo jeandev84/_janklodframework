@@ -79,6 +79,8 @@ class RouteParameter
         $this->addOption(static::OPTION_PARAM_NAMESPACE, $namespace);
     }
 
+
+
     /**
      * remove all options options
      *
@@ -95,7 +97,7 @@ class RouteParameter
     */
     public function flush()
     {
-        $this->options = [];
+        $this->flushOptions();
     }
 
 
@@ -119,7 +121,7 @@ class RouteParameter
     public function getOption($key, $default = null)
     {
         foreach (array_keys($this->options) as $index) {
-            if(! $this->isValidOption($index)) {
+            if(! $this->hasOption($index)) {
                 return new \Exception(sprintf('%s is not available this param', $index));
             }
         }
@@ -220,7 +222,7 @@ class RouteParameter
      * @param $key
      * @return bool
     */
-    protected function isValidOption($key): bool
+    protected function hasOption($key): bool
     {
         return \in_array($key, $this->getOptionParams());
     }

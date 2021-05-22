@@ -145,17 +145,10 @@ class Router extends RouteCollection
      */
     public function group(Closure $routeCallback, array $options = [])
     {
-        /*
-        if(! isset($options[self::OPTION_PARAM_PATH_PREFIX])) {
-            $options[self::OPTION_PARAM_PATH_PREFIX] = '/';
-        }
-        */
-
         if($options) {
             $this->routeParameters->addOptions($options);
         }
 
-        /* $this->isRouteGroup = true; */
         $routeCallback($this);
         $this->routeParameters->flushOptions();
     }

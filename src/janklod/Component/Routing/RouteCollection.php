@@ -15,11 +15,6 @@ class RouteCollection
      protected $routes = [];
 
 
-     /**
-      * @var array
-     */
-     protected $group = [];
-
 
      /**
       * @var array
@@ -47,19 +42,19 @@ class RouteCollection
      }
 
 
-//     /**
-//      * @param $name
-//      * @param Route $route
-//      * @throws \Exception
-//     */
-//     public function set($name, Route $route)
-//     {
-//          if(\array_key_exists($name, $this->namedRoutes)) {
-//               throw new \Exception('name '. $name .' already taken!');
-//          }
-//
-//          $this->namedRoutes[$name] = $route;
-//     }
+     /**
+      * @param $name
+      * @param Route $route
+      * @throws \Exception
+     */
+     public function set($name, Route $route)
+     {
+          if(\array_key_exists($name, $this->namedRoutes)) {
+               throw new \Exception('name '. $name .' already taken!');
+          }
+
+          $this->namedRoutes[$name] = $route;
+     }
 
 
 
@@ -82,31 +77,6 @@ class RouteCollection
                   $this->add($route);
               }
          }
-     }
-
-
-     /**
-      * @param array $group
-      * @return RouteCollection
-     */
-     public function addRouteGroup(array $group)
-     {
-          $this->setRoutes($group);
-
-          $this->group = array_merge($this->group, $group);
-
-          return $this;
-     }
-
-
-     /**
-      * get resources
-      *
-      * @return array
-     */
-     public function getRouteGroups()
-     {
-         return $this->group;
      }
 
 
@@ -189,7 +159,7 @@ class RouteCollection
         foreach ($this->getRoutes() as $route)
         {
             /** @var Route $route */
-            $routes[$route->getMethodToString()][] = $route;
+            $routes[$route->toStringMethod()][] = $route;
         }
 
         return $routes;

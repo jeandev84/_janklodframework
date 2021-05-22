@@ -384,7 +384,7 @@ class Route implements \ArrayAccess
      * @param string $separator
      * @return string
     */
-    public function getMethodToString($separator = '|'): string
+    public function toStringMethod($separator = '|'): string
     {
         return implode($separator, $this->getMethods());
     }
