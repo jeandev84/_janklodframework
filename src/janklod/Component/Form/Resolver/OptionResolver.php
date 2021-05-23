@@ -60,7 +60,7 @@ class OptionResolver
       /**
        * @param array $options
       */
-      public function setDefaultOptions(array $options = [])
+      public function setDefaults(array $options = [])
       {
             $this->options = array_merge($options, $this->options);
       }

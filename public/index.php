@@ -89,20 +89,33 @@ function getJsonContent()
 echo getJsonContent();
 
 $user = new \App\Entity\User();
-$form = new \Jan\Component\Form\Form($user);
+$form = new \Jan\Foundation\Form\Form($user);
 $form->add('email', EmailType::class, [
   'label' => 'Емайл',
   'attr' => [
       'class' => 'form-control',
+      'placeholder' => 'Е-майл'
       /* 'style' => 'border: 1px solid #ccc;font-size:16;background-color:#ff2ad8' */
   ]
 ])->add('password', PasswordType::class, [
-
+  'label' => 'Пароль',
+  'attr' => [
+      'class' => 'form-control',
+      'placeholder' => 'Пароль'
+        /* 'style' => 'border: 1px solid #ccc;font-size:16;background-color:#ff2ad8' */
+   ]
 ])->add('username', TextType::class, [
-
+    'label' => 'Логин',
+    'attr' => [
+        'class' => 'form-control',
+        'placeholder' => 'Логин'
+        /* 'style' => 'border: 1px solid #ccc;font-size:16;background-color:#ff2ad8' */
+    ]
 ])->add('address', TextareaType::class, [
+       'label' => 'Адрес',
        'attr' => [
-           'class' => 'form-control'
+           'class' => 'form-control',
+           'placeholder' => 'Адрес'
        ]
 ]);
 
@@ -114,19 +127,19 @@ echo "<h2>Sign up</h2>";
 //$form->start('/', 'GET', []);
 echo '<form action="/" method="GET">';
 echo '<div class="form-group">';
-echo $form->getRow('email');
+echo $form->createRow('email');
 echo '</div>';
 
 echo '<div class="form-group">';
-echo $form->getRow('password');
+echo $form->createRow('password');
 echo '</div>';
 
 echo '<div class="form-group">';
-echo $form->getRow('username');
+echo $form->createRow('username');
 echo '</div>';
 
 echo '<div class="form-group">';
-echo $form->getRow('address');
+echo $form->createRow('address');
 echo '</div>';
 echo '</form>';
 
