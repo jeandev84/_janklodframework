@@ -15,15 +15,17 @@ class RepeatPasswordType extends PasswordType
     */
     public function build(): string
     {
+        // TODO Refactoring
+        // name of input type (password)
         $name = $this->getName();
 
+        //
         if($firstChild = $this->getOption('first_child')) {
             $name = $firstChild;
         }
 
         $html = parent::build();
-        $html.= $this->make($name, $this->getOption('second_child'), $this->getOption('second_options'));
-
+        $html.= $this->formatHtml($name, $this->getOption('second_child'), $this->getOption('second_options'));
         return $html;
     }
 }

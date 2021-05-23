@@ -12,7 +12,15 @@ class OptionResolver
       /**
        * @var array
       */
-      protected $options = [];
+      protected $options = [
+          'parent'     => null,
+          'rows'       => [],
+          'multiple'   => false,
+          'mapped'     => false,
+          'html'       => [],
+          'data_class' => null,
+          'data'       => null
+      ];
 
 
 
@@ -26,13 +34,35 @@ class OptionResolver
       }
 
 
+      /**
+       * @param $key
+       * @param $value
+       * @return $this
+      */
+      public function setOption($key, $value): OptionResolver
+      {
+          $this->options[$key] = $value;
+
+          return $this;
+      }
+
+
+      /**
+       * @param array $options
+      */
+      public function addOptions(array $options)
+      {
+          $this->options = array_merge($this->options, $options);
+      }
+
+
 
       /**
        * @param array $options
       */
       public function setDefaultOptions(array $options = [])
       {
-           $this->options = array_merge($options, $this->options);
+            $this->options = array_merge($options, $this->options);
       }
 
 
@@ -45,11 +75,7 @@ class OptionResolver
      */
      public function getOption(string $key, $default = null)
      {
-        if(\array_key_exists($key, $this->options)) {
-            throw new \Exception($key .' is not a valid option param.');
-        }
-
-        return $this->options[$key] ?? $default;
+         return $this->options[$key] ?? $default;
      }
 
 

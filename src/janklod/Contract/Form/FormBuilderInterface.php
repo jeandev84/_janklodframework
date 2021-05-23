@@ -17,5 +17,5 @@ interface FormBuilderInterface
      * @param array $options
      * @return FormInterface
     */
-    public function add(string $child, string $type, array $options = []): FormInterface;
+    public function add(string $child, string $type, array $options = []);
 }

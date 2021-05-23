@@ -2,43 +2,29 @@
 namespace Jan\Component\Form\Type;
 
 
-use Jan\Component\Form\Type\Support\AbstractType;
+use Jan\Component\Form\Type\Support\Type;
 
 
 /**
  * Class InputType
- * @package Jan\Component\Form\Type
+ * @package Jan\Component\Form\Type\Support
 */
-class InputType extends AbstractType
+abstract class InputType extends Type
 {
 
-    const MASK_FORMAT = '<input type="%s" name="%s" %s>';
-
-
-    /**
-     * @return string
-    */
-    public function getDefaultName(): string
+    public function buildLabel()
     {
-
+        return '';
     }
 
 
     /**
      * @return string
-    */
-    public function getName(): string
-    {
-        return 'text';
-    }
-
-
-    /**
-     * @return string
+     * @throws \Exception
     */
     public function build(): string
     {
-        return $this->make($this->getName(), $this->getChild(), []);
+        return $this->formatHtml($this->getName(), $this->getChild(), $this->getVar('attr', []));
     }
 
 
@@ -47,12 +33,23 @@ class InputType extends AbstractType
      *
      * @param string $name
      * @param string $child
+     * @param array $attrs
      * @return string
      * @throws \Exception
     */
-    protected function make(string $name, string $child): string
+    public function formatHtml(string $name, string $child, array $attrs = []): string
     {
-        $attributes = implode(" ", $this->getOption('attr', []));
-        return sprintf(static::MASK_FORMAT, $name, $child, $attributes);
+        $attributes = $this->makeAttributes($attrs);
+        return sprintf('<input type="%s" name="%s" %s>', $name, $child, $attributes);
     }
+
+
+
+    /**
+     * get name of form type
+     *
+     * @return string
+    */
+    abstract public function getName(): string;
+
 }

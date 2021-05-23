@@ -8,6 +8,7 @@
 
 use Jan\Component\Form\Type\EmailType;
 use Jan\Component\Form\Type\PasswordType;
+use Jan\Component\Form\Type\TextareaType;
 use Jan\Component\Form\Type\TextType;
 
 require_once __DIR__.'/../vendor/autoload.php';
@@ -87,18 +88,50 @@ function getJsonContent()
 
 echo getJsonContent();
 
-$form = new \Jan\Component\Form\Form();
+$user = new \App\Entity\User();
+$form = new \Jan\Component\Form\Form($user);
 $form->add('email', EmailType::class, [
-
+  'label' => 'Емайл',
+  'attr' => [
+      'class' => 'form-control',
+      /* 'style' => 'border: 1px solid #ccc;font-size:16;background-color:#ff2ad8' */
+  ]
 ])->add('password', PasswordType::class, [
 
 ])->add('username', TextType::class, [
 
+])->add('address', TextareaType::class, [
+       'attr' => [
+           'class' => 'form-control'
+       ]
 ]);
 
-echo "<div>";
-echo $form->createView();
-echo "</div>";
+//echo "<div>";
+//echo $form->createView();
+//echo "</div>";
+
+echo "<h2>Sign up</h2>";
+//$form->start('/', 'GET', []);
+echo '<form action="/" method="GET">';
+echo '<div class="form-group">';
+echo $form->getRow('email');
+echo '</div>';
+
+echo '<div class="form-group">';
+echo $form->getRow('password');
+echo '</div>';
+
+echo '<div class="form-group">';
+echo $form->getRow('username');
+echo '</div>';
+
+echo '<div class="form-group">';
+echo $form->getRow('address');
+echo '</div>';
+echo '</form>';
+
+//$form->end();
+dd($form);
 ?>
 
 <form action="" method="get">

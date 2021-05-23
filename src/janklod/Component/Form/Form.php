@@ -4,8 +4,9 @@ namespace Jan\Component\Form;
 
 use Jan\Component\Form\Resolver\OptionResolver;
 use Jan\Component\Form\Resolver\DataResolver;
-use Jan\Component\Form\Type\InputType;
-use Jan\Component\Form\Type\Support\AbstractType;
+use Jan\Component\Form\Traits\FormTrait;
+use Jan\Component\Form\Type\Support\Type;
+use Jan\Component\Form\Type\TextType;
 
 
 /**
@@ -15,32 +16,30 @@ use Jan\Component\Form\Type\Support\AbstractType;
 class Form
 {
 
-     /**
-      * @var mixed
-     */
-     protected $data;
-
+    use FormTrait;
 
 
      /**
       * @var array
      */
-     protected $rows  = [];
-
-
-     /**
-      * @var array
-     */
-     protected $options = [
-
+     protected $vars = [
+         'parent' => null,
+         'rows' => []
      ];
 
 
 
     /**
-     * @var array
+     * @var bool
     */
-    protected $html = [];
+    protected $enabled = false;
+
+
+
+    /**
+     * @var bool
+    */
+    protected $started = false;
 
 
 
@@ -48,22 +47,47 @@ class Form
      * Form constructor.
      *
      * @param $data
-     */
+    */
     public function __construct($data = null)
     {
         if($data) {
-            $this->setData($data);
+            $this->addVars(compact('data'));
+            $this->setVar('data_class', \get_class($data));
         }
     }
 
 
     /**
-     * @param $data
-     * @return Form
-     */
-    public function setData($data): Form
+     * @param string $path
+     * @param string $method
+     * @param array $attrs
+    */
+    public function start(string $path = '/', string $method = "POST", array $attrs = [])
     {
-        $this->data = $data;
+         $str = $this->makeAttributes($attrs);
+         /* ob_start(); */
+         $this->vars['html'][] = '<form action="'. $path .'" method="'. $method .'" '. $attrs .'>';
+         $this->started = true;
+    }
+
+
+    /**
+     * @param array $vars
+    */
+    public function addVars(array $vars)
+    {
+        $this->vars = array_merge($this->vars, $vars);
+    }
+
+
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+    */
+    public function setVar($key, $value)
+    {
+        $this->vars[$key] = $value;
 
         return $this;
     }
@@ -71,23 +95,51 @@ class Form
 
 
     /**
+     * @param $name
+     * @param Type $type
+     * @return $this
+    */
+    public function setRow($name, Type $type): Form
+    {
+        $this->vars['rows'][$name] = $type;
+
+        return $this;
+    }
+
+
+    /**
+     * @param string $formatHtml
+     * @return $this
+    */
+    public function addFormat(string $formatHtml): Form
+    {
+        $this->vars['html'][] = $formatHtml;
+
+        return $this;
+    }
+
+
+    /**
      * @param string $child
      * @param string|null $type
      * @param array $options
      * @return Form
-    */
-    public function add(string $child, string $type = null, array $options = []): Form
+     * @throws \Exception
+     */
+    public function add(string $child, ?string $type, array $options = []): Form
     {
+        $options = array_merge($this->vars, $options);
         $resolver  = new OptionResolver($options);
-        $inputType = new InputType($child, $resolver);
+        $row = new TextType($child, $resolver);
 
-        if(! is_null($type)) {
-            $inputType = new $type($child, $resolver);
+        if(! \is_null($type)) {
+            $row = new $type($child, $resolver);
         }
 
-        if($inputType instanceof AbstractType) {
-            $this->rows[$child] = $inputType;
-            $this->html[] = $inputType->build();
+        if($row instanceof Type) {
+            $this->setRow($child, $row);
+            $this->addFormat($row->build());
+            /* $resolver->addOptions($options); */
         }
 
         return $this;
@@ -99,23 +151,27 @@ class Form
     */
     public function getRows(): array
     {
-        return $this->rows;
+        return $this->vars['rows'];
     }
-
 
 
     /**
      * @param string $child
+     * @param array $options
      * @return mixed
      * @throws \Exception
     */
-    public function getRow(string $child): mixed
+    public function getRow(string $child, array $options = [])
     {
-        if(\array_key_exists($child, $this->rows)) {
+        /* $this->createView(true); */
+        if(! \array_key_exists($child, $this->vars['rows'])) {
             throw new \Exception('child ('. $child . ') has not defined row.');
         }
 
-        return $this->rows[$child];
+        /** @var Type $row */
+        $row = $this->vars['rows'][$child];
+        $row->getOptionResolver()->addOptions($options);
+        return $row->build();
     }
 
 
@@ -128,7 +184,7 @@ class Form
     {
         if ($child) {
 
-            $data = $this->data[$child];
+            $data = $this->vars[$child];
             $resolver = new DataResolver($data);
 
             if(\is_object($data)) {
@@ -136,20 +192,38 @@ class Form
             }
         }
 
-        if(\is_object($this->data)) {
-            return $this->data;
+        if(\is_object($this->vars['data'])) {
+            return $this->vars['data'];
         }
 
         return null;
     }
 
 
-
     /**
      * @return string
     */
-    public function createView(): string
+    public function end()
     {
-        return implode("\n", $this->html);
+        $this->vars['html'][] = "</form>";
+
+        if($this->started) {
+            echo  $this->createView();
+        }
+    }
+
+
+
+    /**
+     * @param bool $disabled
+     * @return string|null
+    */
+    public function createView(bool $disabled = false)
+    {
+        if($disabled === true) {
+            return null;
+        }
+
+        return implode("\n", $this->vars['html']);
     }
 }

@@ -8,13 +8,34 @@ namespace Jan\Component\Form\Resolver;
 */
 class DataResolver
 {
+
+    /**
+     * @var object|array
+    */
     protected $data;
 
-    public function __construct($data)
+
+    /**
+     * @var OptionResolver
+    */
+    protected $resolver;
+
+
+    /**
+     * DataResolver constructor.
+     * @param $data
+     * @param OptionResolver|null $resolver
+     */
+    public function __construct($data, OptionResolver $resolver = null)
     {
-        $this->data = $data;
+         $this->data = $data;
+         $this->resolver = $resolver;
     }
 
+
+    /**
+     *
+    */
     public function getValues()
     {
 

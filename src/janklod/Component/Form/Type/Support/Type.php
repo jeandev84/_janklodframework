@@ -3,18 +3,24 @@ namespace Jan\Component\Form\Type\Support;
 
 
 use Jan\Component\Form\Resolver\OptionResolver;
+use Jan\Component\Form\Traits\FormTrait;
 
 /**
  * Class AbstractType
  * @package Jan\Component\Form\Type\Support
 */
-abstract class AbstractType
+abstract class Type
 {
+
+     use FormTrait;
+
 
      /**
       * @var string
      */
      protected $child;
+
+
 
 
      /**
@@ -31,13 +37,24 @@ abstract class AbstractType
      */
      public function __construct(string $child, OptionResolver $resolver)
      {
-          $this->child    = $child;
+          $this->child = $child;
           $this->resolver = $resolver;
      }
 
 
      /**
+      * @return OptionResolver
+     */
+     public function getOptionResolver(): OptionResolver
+     {
+         return $this->resolver;
+     }
+
+
+
+     /**
       * @return string
+      * @throws \Exception
      */
      public function getChild(): string
      {
@@ -47,19 +64,9 @@ abstract class AbstractType
 
 
      /**
-      * @return OptionResolver
-     */
-     public function getResolver(): OptionResolver
-     {
-         return $this->resolver;
-     }
-
-
-
-     /**
       * @return array
      */
-     public function getOptions(): array
+     public function getVars(): array
      {
          return $this->resolver->getOptions();
      }
@@ -71,24 +78,22 @@ abstract class AbstractType
       * @return mixed
       * @throws \Exception
      */
-     public function getOption(string $key, $default = null)
+     public function getVar(string $key, $default = null)
      {
-        return $this->resolver->getOption($key, $default);
+         return $this->resolver->getOption($key, $default);
      }
 
 
-     /**
-      * get name of form type
-      *
-      * @return string
-     */
-     abstract public function getName(): string;
+
+    /**
+     * @return string
+    */
+    public function getDefaultName(): string { }
 
 
-     /**
-      * build html input
-      *
-      * @return string
-     */
-     abstract  public function build(): string;
+
+    /**
+     * @return string
+    */
+    abstract public function build(): string;
 }

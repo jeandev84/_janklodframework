@@ -5,6 +5,7 @@ namespace Jan\Contract\Form;
 use Jan\Component\Http\Request;
 
 
+
 /**
  * Interface FormInterface
  *
@@ -20,12 +21,12 @@ interface FormInterface extends FormBuilderInterface
       public function handle(Request $request);
 
 
-
-     /**
-      * create a html
-      *
-      * @return string
+      /**
+       * create a html
+       *
+       * @param bool $disabled
+       * @return string|null
      */
-     public function createView(): string;
+     public function createView(bool $disabled = false);
 
 }

@@ -590,10 +590,11 @@ class Request
     */
     public function getJsonContent()
     {
+        $content = urldecode(file_get_contents("php://input"));
         $items = explode("&", file_get_contents("php://input"));
         $arr = [];
         foreach ($items as $item) {
-            if(stripos($item, "=") !== false) {
+            if(\stripos($item, "=") !== false) {
                 list($key, $value) = explode("=", $item);
                 $arr[$key] = urldecode($value);
             }
