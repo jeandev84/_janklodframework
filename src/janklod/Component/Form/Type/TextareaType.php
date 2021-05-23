@@ -11,6 +11,7 @@ use Jan\Component\Form\Type\Support\Type;
 */
 class TextareaType extends Type
 {
+
     /**
      * @return string
      * @throws \Exception

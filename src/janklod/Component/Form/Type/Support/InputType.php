@@ -1,8 +1,6 @@
 <?php
-namespace Jan\Component\Form\Type;
+namespace Jan\Component\Form\Type\Support;
 
-
-use Jan\Component\Form\Type\Support\Type;
 
 
 /**
@@ -24,8 +22,9 @@ abstract class InputType extends Type
     */
     public function build(): string
     {
-        return $this->formatHtml($this->getName(), $this->getChild(), $this->getVar('attr', []));
+        return $this->formatHtml($this->getTypeName(), $this->getChild(), $this->getVar('attr', []));
     }
+
 
 
     /**
@@ -50,6 +49,5 @@ abstract class InputType extends Type
      *
      * @return string
     */
-    abstract public function getName(): string;
-
+    abstract public function getTypeName(): string;
 }

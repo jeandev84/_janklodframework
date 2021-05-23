@@ -346,6 +346,23 @@ class Request
     }
 
 
+    /**
+     * @return mixed|null
+    */
+    public function getMethod()
+    {
+         return $this->server->get('REQUEST_METHOD');
+    }
+
+
+    /**
+     * @param $method
+    */
+    public function setMethod($method)
+    {
+        $this->server->set('REQUEST_METHOD', $method);
+    }
+
 
     /**
      * @return string
@@ -551,6 +568,16 @@ class Request
         $this->attributes = $attributes;
 
         return $this;
+    }
+
+
+    /**
+     * @param string $key
+     * @param $value
+    */
+    public function setAttribute(string $key, $value)
+    {
+        $this->attributes[$key] = $value;
     }
 
 

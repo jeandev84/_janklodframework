@@ -6,7 +6,7 @@ namespace Jan\Component\Form\Type;
  * Class ButtonSubmitType
  * @package Jan\Component\Form\Type
 */
-class ButtonSubmitType
+class ButtonSubmitType extends ButtonType
 {
 
 }

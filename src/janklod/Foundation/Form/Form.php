@@ -24,7 +24,7 @@ class Form implements FormBuilderInterface
 
     /**
      * @var array
-     */
+    */
     protected $vars = [
         'parent' => null,
         'rows' => []
@@ -34,7 +34,7 @@ class Form implements FormBuilderInterface
 
     /**
      * @var bool
-     */
+    */
     protected $enabled = false;
 
 
@@ -57,7 +57,10 @@ class Form implements FormBuilderInterface
             $this->setVars(compact('data'));
             $this->setVar('data_class', \get_class($data));
         }
+
+        // validator: $validator = new Validator($data);
     }
+
 
 
     /**
@@ -65,8 +68,29 @@ class Form implements FormBuilderInterface
     */
     public function handle(Request $request)
     {
-        // TODO: Implement handle() method.
+        $data = null;
+
+        if(\in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])) {
+
+            $data = $request->request->all();
+            if($files = $request->files->all()) {
+                $data = array_merge($data, $files);
+            }
+
+            if($method = $request->request->get('_method')) {
+                $request->setMethod($method);
+            }
+
+            $this->enabled = true;
+        }
+
+
+        if ($request->getMethod() === 'GET') {
+            $data = $request->queryParams->all();
+            $this->enabled = true;
+        }
     }
+
 
 
     /**
@@ -85,7 +109,7 @@ class Form implements FormBuilderInterface
 
     /**
      * @param array $vars
-     */
+    */
     public function setVars(array $vars)
     {
         $this->vars = array_merge($this->vars, $vars);
@@ -119,10 +143,11 @@ class Form implements FormBuilderInterface
     }
 
 
+
     /**
      * @param string $formatHtml
      * @return $this
-     */
+    */
     public function addFormat(string $formatHtml): Form
     {
         $this->vars['html'][] = $formatHtml;
@@ -160,7 +185,7 @@ class Form implements FormBuilderInterface
 
     /**
      * @return array
-     */
+    */
     public function getRows(): array
     {
         return $this->vars['rows'];
@@ -184,13 +209,14 @@ class Form implements FormBuilderInterface
     }
 
 
+
     /**
      * @param string $child
      * @param array $options
-     * @return mixed
+     * @return string
      * @throws \Exception
     */
-    public function createRow(string $child, array $options = [])
+    public function createRow(string $child, array $options = []): string
     {
         $row = $this->getRow($child);
         $row->getOptionResolver()->addOptions($options);

@@ -51,6 +51,18 @@ abstract class Type
      }
 
 
+     /**
+      * @return string
+      * @throws \Exception
+     */
+     public function getAttributes()
+     {
+         $attrs = $this->getVar('attr', []);
+         return $this->makeAttributes($attrs);
+     }
+
+
+
 
      /**
       * @return string
