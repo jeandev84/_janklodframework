@@ -11,7 +11,7 @@ class InputBag extends ParameterBag
 
     /**
      * @param array $items
-     */
+    */
     public function replace(array $items)
     {
         $this->params = [];

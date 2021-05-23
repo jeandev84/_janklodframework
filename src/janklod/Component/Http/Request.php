@@ -586,6 +586,42 @@ class Request
 
 
     /**
+     * @return false|string
+    */
+    public function getJsonContent()
+    {
+        $items = explode("&", file_get_contents("php://input"));
+        $arr = [];
+        foreach ($items as $item) {
+            if(stripos($item, "=") !== false) {
+                list($key, $value) = explode("=", $item);
+                $arr[$key] = urldecode($value);
+            }
+        }
+
+        return json_encode($arr);
+    }
+
+
+    /**
+     * @return mixed
+    */
+    public function toArray()
+    {
+        // JSON TO ARRAY
+        $content = '{
+             "email" : "jeanyao@ymail.com",
+             "password" : "qwerty",
+             "username" : "jeanyao"
+        }';
+
+        $data = json_decode($content, true);
+        echo $data['email'];
+        return json_decode($content, true);
+    }
+
+
+    /**
      * @return bool
     */
     protected function hasContentTypeFormUrlEncoded(): bool

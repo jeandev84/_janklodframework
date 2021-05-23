@@ -98,6 +98,17 @@ class FileLocator
       */
       public function resolvePath(string $filename): string
       {
-          return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, trim($filename, '\\/'));
+          $filename = $this->removeTrainingSlashes($filename);
+          return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $filename);
+      }
+
+
+      /**
+       * @param string $path
+       * @return string
+      */
+      public function removeTrainingSlashes(string $path): string
+      {
+          return trim($path, '\\/');
       }
 }
