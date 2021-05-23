@@ -169,11 +169,10 @@ class Form implements FormBuilderInterface
 
     /**
      * @param string $child
-     * @param array $options
      * @return mixed
      * @throws \Exception
-     */
-    public function getRow(string $child, array $options = [])
+    */
+    public function getRow(string $child)
     {
         /* $this->createView(true); */
         if(! \array_key_exists($child, $this->vars['rows'])) {
