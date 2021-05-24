@@ -1,5 +1,5 @@
 <?php
-namespace Jan\Contract\Form;
+namespace Jan\Foundation\Form\Contract;
 
 
 use Jan\Component\Http\Request;
@@ -7,7 +7,7 @@ use Jan\Component\Http\Request;
 /**
  * Interface FormBuilderInterface
  *
- * @package Jan\Contract\Form
+ * @package Jan\Foundation\Form\Contract
 */
 interface FormBuilderInterface
 {
@@ -25,7 +25,7 @@ interface FormBuilderInterface
      * @param Request $request
      * @return void
     */
-    public function handle(Request $request);
+    public function handleRequest(Request $request);
 
 
 

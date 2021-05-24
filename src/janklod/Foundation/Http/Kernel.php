@@ -58,7 +58,7 @@ class Kernel implements HttpKernelContract
     */
     public function terminate(Request $request, Response $response)
     {
-        echo 'Teminate application';
+        echo 'Teminate application <br>';
         // dd($request, $response);
     }
 }

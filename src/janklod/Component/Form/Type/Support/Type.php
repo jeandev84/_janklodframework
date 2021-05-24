@@ -15,6 +15,7 @@ abstract class Type
      use FormTrait;
 
 
+
      /**
       * @var string
      */
@@ -57,7 +58,7 @@ abstract class Type
      */
      public function getAttributes()
      {
-         $attrs = $this->getVar('attr', []);
+         $attrs = $this->getOption('attr', []);
          return $this->makeAttributes($attrs);
      }
 
@@ -90,7 +91,7 @@ abstract class Type
       * @return mixed
       * @throws \Exception
      */
-     public function getVar(string $key, $default = null)
+     public function getOption(string $key, $default = null)
      {
          return $this->resolver->getOption($key, $default);
      }

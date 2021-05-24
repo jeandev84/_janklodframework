@@ -238,7 +238,7 @@ class Request
         $this->content     = $content;
 
         $this->session     = new Session();
-        $this->method      = $this->server->get('REQUEST_METHOD');
+        $this->method      = $this->getMethod();
         $this->languages   = null;
         $this->charsets    = null;
         $this->encodings   = null;
@@ -346,6 +346,19 @@ class Request
     }
 
 
+    public function getRequestData()
+    {
+        $data = [];
+        if($this->getMethod() === 'POST') {
+            $data = $this->request->all();
+            if($files = $this->files->all()) {
+                $data = array_merge($data, $files);
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * @return mixed|null
     */
@@ -357,10 +370,13 @@ class Request
 
     /**
      * @param $method
+     * @return Request
     */
     public function setMethod($method)
     {
-        $this->server->set('REQUEST_METHOD', $method);
+        $this->method = $method;
+
+        return $this;
     }
 
 

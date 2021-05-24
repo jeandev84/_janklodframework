@@ -18,7 +18,7 @@ class TextareaType extends Type
     */
     public function build(): string
     {
-        $attrs = $this->getVar('attr', []);
+        $attrs = $this->getOption('attr', []);
         $attributes = $this->makeAttributes($attrs);
         return sprintf('<textarea name="%s" %s></textarea>', $this->getChild(), $attributes);
     }

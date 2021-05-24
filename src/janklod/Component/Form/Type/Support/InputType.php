@@ -9,7 +9,6 @@ namespace Jan\Component\Form\Type\Support;
 */
 abstract class InputType extends Type
 {
-
     public function buildLabel()
     {
         return '';
@@ -22,7 +21,7 @@ abstract class InputType extends Type
     */
     public function build(): string
     {
-        return $this->formatHtml($this->getTypeName(), $this->getChild(), $this->getVar('attr', []));
+        return $this->formatHtml($this->getTypeName(), $this->getChild(), $this->getOption('attr', []));
     }
 
 

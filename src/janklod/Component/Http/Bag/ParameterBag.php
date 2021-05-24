@@ -110,10 +110,6 @@ class ParameterBag
      */
      public function remove($key)
      {
-         if(! $this->has($key)) {
-             throw new \InvalidArgumentException($key .' does not exist');
-         }
-
          unset($this->params[$key]);
      }
 

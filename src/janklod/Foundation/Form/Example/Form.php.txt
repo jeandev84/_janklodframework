@@ -8,7 +8,7 @@ use Jan\Component\Form\Traits\FormTrait;
 use Jan\Component\Form\Type\Support\Type;
 use Jan\Component\Form\Type\TextType;
 use Jan\Component\Http\Request;
-use Jan\Foundation\Form\Contract\FormBuilderInterface;
+use Jan\Contract\Form\FormBuilderInterface;
 
 
 
@@ -26,18 +26,18 @@ class Form implements FormBuilderInterface
      * @var array
     */
     protected $vars = [
+        'parent'      => null, // must be a form
         'children'    => [],
         /* 'multiple'    => false, */
-        /* 'mapped'      => true, */
-        /* 'parent'      => true, */
+        'mapped'      => true,
         'html'        => [],
         'data_class'  => null,
         'data'        => null,
-        'errors'      => []
+        'is_valid'    => false,
+        'submitted'   => false,
+        'constraints' => []
     ];
 
-
-    protected $submitted = false;
 
 
     /**
@@ -60,26 +60,26 @@ class Form implements FormBuilderInterface
      * @param Request $request
      * @throws \ReflectionException
     */
-    public function handleRequest(Request $request)
+    public function handle(Request $request)
     {
         $data = null;
 
-        if($request->getMethod() === 'POST') {
-            if($method = $request->request->get('_method')) {
-                if(\in_array($method, ['PUT', 'DELETE', 'PATCH'])) {
-                    $request->setMethod($method);
-                    $request->request->remove('_method');
-                }
+        if(\in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])) {
+
+            $data = $request->request->all();
+            if($files = $request->files->all()) {
+                $data = array_merge($data, $files);
             }
 
-            $data = $request->getRequestData();
+            if($method = $request->request->get('_method')) {
+                $request->setMethod($method);
+            }
         }
 
         if ($request->getMethod() === 'GET') {
             $data = $request->queryParams->all();
         }
 
-        dump($request);
         if($data) {
             if($dataClass = $this->getVar('data_class')) {
 
@@ -98,7 +98,7 @@ class Form implements FormBuilderInterface
                     }
                 }
 
-                $this->submitted = true;
+                $this->setVar('submitted', true);
             }
 
 
@@ -195,13 +195,11 @@ class Form implements FormBuilderInterface
     */
     public function add(string $child, ?string $type, array $options = []): Form
     {
-        /*
         $resolver   = new OptionResolver($options);
         $formView = new FormView($child, $type, $resolver);
-        */
 
+        dd($formView);
         $resolver   = new OptionResolver($options);
-        $resolver->setOption('data', $this->vars['data']);
         $row = new TextType($child, $resolver);
 
         if(! \is_null($type)) {
@@ -211,9 +209,9 @@ class Form implements FormBuilderInterface
         if($row instanceof Type) {
             $this->vars['children'][$child] = $row;
             $this->addFormat($row->build());
+            /* $resolver->addOptions($options); */
         }
 
-        /* $this->vars['children'][] = $formView; */
         return $this;
     }
 
@@ -291,11 +289,9 @@ class Form implements FormBuilderInterface
     {
         $this->vars['html'][] = "</form>";
 
-        /*
         if($this->started) {
             echo  $this->createView();
         }
-        */
     }
 
 
@@ -319,7 +315,7 @@ class Form implements FormBuilderInterface
     */
     public function isSubmit(): bool
     {
-         return $this->submitted;
+         return $this->vars['submitted'];
     }
 
 
@@ -328,6 +324,6 @@ class Form implements FormBuilderInterface
     */
     public function isValid(): bool
     {
-        return empty($this->vars['errors']);
+        return $this->vars['is_valid'];
     }
 }

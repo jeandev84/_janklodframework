@@ -86,7 +86,14 @@ function getJsonContent()
     return \json_encode($arr);
 }
 
-echo getJsonContent();
+//echo getJsonContent() . "<br>";
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $content = file_get_contents('php://input');
+    echo urldecode($content);
+}
+
+
 $user = new \App\Entity\User();
 $form = new \Jan\Foundation\Form\Form($user);
 $form->add('email', EmailType::class, [
@@ -146,6 +153,12 @@ echo '</form>';
 $form->end();
 dump($form);
 */
+
+dump($form);
+
+$form->handleRequest($request);
+
+
 ?>
 
 <!doctype html>
@@ -162,7 +175,7 @@ dump($form);
     -->
 </head>
 <body>
-<form action="/" method="POST">
+<form action="/" method="POST" enctype="">
       <h2 class="text-center">Sign up</h2>
       <div class="container">
           <div class="form-group">
@@ -180,6 +193,8 @@ dump($form);
           <div class="form-group">
               <?= $form->createRow('address'); ?>
           </div>
+          <input type="hidden" name="_method" value="PUT">
+          <button type="submit" class="btn btn-primary">Отправить</button>
       </div>
 </form>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

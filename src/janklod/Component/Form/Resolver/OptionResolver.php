@@ -13,13 +13,13 @@ class OptionResolver
        * @var array
       */
       protected $options = [
-          'parent'     => null,
-          'rows'       => [],
-          'multiple'   => false,
-          'mapped'     => false,
-          'html'       => [],
-          'data_class' => null,
-          'data'       => null
+          'label'       => '',
+          'attr'        => [],
+          'mapped'      => true,
+          'data'        => null,
+          'constraints' => [],
+          'multiple'    => false,
+          'parent'      => null
       ];
 
 
@@ -30,7 +30,7 @@ class OptionResolver
       */
       public function __construct(array $options = [])
       {
-           $this->options = $options;
+           $this->add($options);
       }
 
 
@@ -50,9 +50,20 @@ class OptionResolver
       /**
        * @param array $options
       */
-      public function addOptions(array $options)
+      public function setOptions(array $options)
       {
           $this->options = array_merge($this->options, $options);
+      }
+
+
+      /**
+       * @param array $options
+      */
+      public function add(array $options)
+      {
+          foreach ($options as $key => $value) {
+              $this->setOption($key, $value);
+          }
       }
 
 
@@ -77,6 +88,7 @@ class OptionResolver
      {
          return $this->options[$key] ?? $default;
      }
+
 
 
      /**
