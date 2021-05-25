@@ -2,16 +2,17 @@
 namespace Jan\Foundation\Routing\Contract;
 
 
+use Jan\Component\Http\Request;
+
 /**
  * Class RouteDispatcherInterface
  * @package Jan\Foundation\Routing\Contract
  */
 interface RouteDispatcherInterface
 {
-    /**
-     * @param string $requestMethod
-     * @param string $requestUri
-     * @return mixed
+     /**
+      * @param Request $request
+      * @return mixed
      */
-    public function dispatch(string $requestMethod, string $requestUri);
+     public function dispatch(Request $request);
 }

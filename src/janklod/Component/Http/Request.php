@@ -376,7 +376,18 @@ class Request
     {
         $this->method = $method;
 
+        $this->server->set('REQUEST_METHOD', $method);
+
         return $this;
+    }
+
+
+    /**
+     * @return bool
+    */
+    public function isPut()
+    {
+       return $this->getMethod() === 'PUT';
     }
 
 

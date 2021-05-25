@@ -115,6 +115,16 @@ class ParameterBag
 
 
      /**
+      * @return void
+     */
+     public function clear()
+     {
+         $this->params = [];
+     }
+
+
+
+     /**
       * @param $key
       * @param int $default
       * @return int
@@ -122,5 +132,11 @@ class ParameterBag
      public function getInt($key, int $default = 0): int
      {
          return (int) $this->get($key, $default);
+     }
+
+
+     public function df()
+     {
+
      }
 }

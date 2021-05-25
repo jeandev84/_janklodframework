@@ -70,6 +70,7 @@ $kernel->terminate($request, $response);
 
 // $url = "http://dppo.apkpro.ru";
 
+/*
 function getJsonContent()
 {
     $content = file_get_contents("php://input");
@@ -86,11 +87,35 @@ function getJsonContent()
     return \json_encode($arr);
 }
 
-//echo getJsonContent() . "<br>";
+echo getJsonContent() . "<br>";
+*/
 
+
+// set parsed body
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = file_get_contents('php://input');
-    echo urldecode($content);
+    /* echo urldecode($content); */
+    parse_str(urldecode($content), $output);
+    dump($output);
+
+    // dump(\json_encode($output));
+
+    $user = new stdClass(); // \json_encode($output);
+    $user->email    = $output['email'];
+    $user->password = $output['password'];
+    $user->username = $output['username'];
+    $user->address  = $output['address'];
+
+    $j = json_encode($user);
+
+    unset($output['_method']);
+
+    $std = new stdClass();
+    foreach ($output as $key => $value) {
+        $std->{$key} = $value;
+    }
+
+    dump($std);
 }
 
 
