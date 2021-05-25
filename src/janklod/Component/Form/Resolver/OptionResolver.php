@@ -19,7 +19,8 @@ class OptionResolver
           'data'        => null,
           'constraints' => [],
           'multiple'    => false,
-          'parent'      => null
+          'parent'      => null,
+          'values'      => []
       ];
 
 

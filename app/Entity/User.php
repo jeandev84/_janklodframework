@@ -12,28 +12,28 @@ class User
      /**
       * @var int
      */
-     protected $id;
+     public $id;
 
 
      /**
       * @var string
      */
-     protected $email;
+     public $email;
 
 
      /**
       * @var string
      */
-     protected $password;
+     public $password;
 
 
      /**
       * @var string
      */
-     protected $address;
+     public $address;
 
 
-     protected $roles = [];
+     public $roles = [];
 
 
      /**

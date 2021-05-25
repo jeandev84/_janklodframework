@@ -346,17 +346,12 @@ class Request
     }
 
 
-    public function getRequestData()
+    public function getRequests()
     {
-        $data = [];
-        if($this->getMethod() === 'POST') {
-            $data = $this->request->all();
-            if($files = $this->files->all()) {
-                $data = array_merge($data, $files);
-            }
-        }
-
-        return $data;
+            return array_merge(
+                $this->request->all(),
+                $this->files->all()
+            );
     }
 
     /**

@@ -179,11 +179,19 @@ $form->end();
 dump($form);
 */
 
+// Before submit
 dump($form);
 
 $form->handleRequest($request);
 
+// After submit
+dump($form);
 
+if($form->isSubmit() && $form->isValid()) {
+    $user = $form->getData();
+    dump($user);
+    // persist data to the database
+}
 ?>
 
 <!doctype html>

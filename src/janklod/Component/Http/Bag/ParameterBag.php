@@ -133,10 +133,4 @@ class ParameterBag
      {
          return (int) $this->get($key, $default);
      }
-
-
-     public function df()
-     {
-
-     }
 }
