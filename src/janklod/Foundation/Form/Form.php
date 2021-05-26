@@ -166,8 +166,13 @@ class Form implements FormBuilderInterface
     {
         /** @var FormView $formView */
         if($child) {
+
+             /** @var OptionResolver $resolver */
              $resolver = $this->getRow($child)->getOptionResolver();
-             $resolver->setOptions($options);
+             if($options) {
+                 $resolver->setOptions($options);
+             }
+
              return $this->getRow($child)->create();
         }
 
