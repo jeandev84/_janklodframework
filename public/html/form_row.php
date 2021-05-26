@@ -16,19 +16,19 @@
     <h2 class="text-center">Sign up</h2>
     <div class="container">
         <div class="form-group">
-            <?= $form->createRow('email'); ?>
+            <?= $form->createView('email'); ?>
         </div>
 
         <div class="form-group">
-            <?= $form->createRow('password'); ?>
+            <?= $form->createView('password'); ?>
         </div>
 
         <div class="form-group">
-            <?= $form->createRow('username'); ?>
+            <?= $form->createView('username'); ?>
         </div>
 
         <div class="form-group">
-            <?= $form->createRow('address'); ?>
+            <?= $form->createView('address'); ?>
         </div>
         <input type="hidden" name="_method" value="PUT">
         <button type="submit" class="btn btn-primary">Отправить</button>

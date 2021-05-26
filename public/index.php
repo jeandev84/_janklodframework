@@ -84,6 +84,12 @@ $form->add('email', EmailType::class, [
         'placeholder' => 'Пароль',
         'class' => 'form-control'
     ]
+])->add('username', TextType::class, [
+    'label' => 'Пользователькое имя',
+    'attr'  => [
+        'placeholder' => 'Пользователькое имя',
+        'class' => 'form-control'
+    ]
 ])->add('address', TextareaType::class, [
     'label' => 'Адрес',
     'attr'  => [
@@ -94,4 +100,5 @@ $form->add('email', EmailType::class, [
 
 dump($form->getVars());
 
-require_once __DIR__.'/html/form.php';
+//require_once __DIR__.'/html/form.php';
+require_once __DIR__.'/html/form_row.php';
