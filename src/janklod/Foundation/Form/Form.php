@@ -140,8 +140,7 @@ class Form implements FormBuilderInterface
          $children = $this->getVar(static::KEY_CHILDREN);
 
          if(\array_key_exists($child, $children)) {
-              $formView = $children[$child];
-              return new FomValue($formView);
+              return new FomValue($children[$child]);
          }
 
          return $this->getVar(static::KEY_DATA);
@@ -167,6 +166,8 @@ class Form implements FormBuilderInterface
     {
         /** @var FormView $formView */
         if($child) {
+             $resolver = $this->getRow($child)->getOptionResolver();
+             $resolver->setOptions($options);
              return $this->getRow($child)->create();
         }
 

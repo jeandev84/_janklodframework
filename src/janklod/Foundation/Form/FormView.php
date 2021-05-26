@@ -45,6 +45,15 @@ class FormView
 
 
     /**
+     * @return OptionResolver
+    */
+    public function getOptionResolver(): OptionResolver
+    {
+        return $this->resolver;
+    }
+
+
+    /**
      * @return string
     */
     public function create()
