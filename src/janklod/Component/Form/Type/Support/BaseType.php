@@ -3,13 +3,14 @@ namespace Jan\Component\Form\Type\Support;
 
 
 use Jan\Component\Form\Resolver\OptionResolver;
-use Jan\Component\Form\Traits\FormTrait;
+use Jan\Component\Form\FormTrait;
+
 
 /**
- * Class AbstractType
+ * Class BaseType
  * @package Jan\Component\Form\Type\Support
 */
-abstract class Type
+abstract class BaseType
 {
 
      use FormTrait;

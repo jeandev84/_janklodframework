@@ -7,7 +7,7 @@ namespace Jan\Component\Form\Type\Support;
  * Class InputType
  * @package Jan\Component\Form\Type\Support
 */
-abstract class InputType extends Type
+abstract class InputType extends BaseType
 {
     public function buildLabel()
     {

@@ -42,21 +42,6 @@ class RouteCollection
      }
 
 
-     /**
-      * @param $name
-      * @param Route $route
-      * @throws \Exception
-     */
-     public function set($name, Route $route)
-     {
-          if(\array_key_exists($name, $this->namedRoutes)) {
-               throw new \Exception('name '. $name .' already taken!');
-          }
-
-          $this->namedRoutes[$name] = $route;
-     }
-
-
 
      /**
       * @return Route[]
@@ -76,6 +61,22 @@ class RouteCollection
               if($route instanceof Route) {
                   $this->add($route);
               }
+         }
+     }
+
+
+     /**
+       * @param $data
+     */
+     public function mapRoutes($data)
+     {
+         if(is_array($data)) {
+             $route = new Route();
+             foreach ($data as $k => $v) {
+                 $route[$k] = $v;
+             }
+
+             $this->add($route);
          }
      }
 
@@ -108,6 +109,7 @@ class RouteCollection
      }
 
 
+
      /**
       * get named routes
       *
@@ -115,14 +117,16 @@ class RouteCollection
      */
      public function getNamedRoutes(): array
      {
+          $namedRoutes = [];
           foreach ($this->getRoutes() as $route) {
               if($name = $route->getName()) {
-                  $this->namedRoutes[$name] = $route;
+                  $namedRoutes[$name] = $route;
               }
           }
 
-          return $this->namedRoutes;
+          return $namedRoutes;
      }
+
 
 
     /**
@@ -135,15 +139,19 @@ class RouteCollection
     }
 
 
+    /**
+     * @param $routeName
+     * @return Route
+     * @throws \Exception
+    */
+    public function getRoute($routeName): Route
+    {
+         if(! $this->has($routeName)) {
+             throw new \Exception('route ('. $routeName . ') does not exist.');
+         }
 
-     /**
-      * @param $routeName
-      * @return Route
-     */
-     public function getRoute($routeName): Route
-     {
          return $this->getNamedRoutes()[$routeName];
-     }
+    }
 
 
 

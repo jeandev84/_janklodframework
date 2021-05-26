@@ -3,6 +3,8 @@ namespace Jan\Component\Routing;
 
 
 use Closure;
+use Jan\Component\Routing\Resolver\ParameterResolver;
+
 
 /**
  * Class Router
@@ -23,7 +25,7 @@ class Router extends RouteCollection
 
 
     /**
-     * @var RouteParameter
+     * @var ParameterResolver
     */
     protected $routeParameters;
 
@@ -32,32 +34,31 @@ class Router extends RouteCollection
     /**
      * @var string
     */
-    protected $baseUrl;
-
-
+    protected $url;
 
 
     /**
      * Router constructor.
+     * @param string $url
     */
-    public function __construct(string $baseUrl = '')
+    public function __construct(string $url = '')
     {
-         if($baseUrl) {
-             $this->setUrl($baseUrl);
+         if($url) {
+             $this->setUrl($url);
          }
 
-         $this->routeParameters = new RouteParameter();
+         $this->routeParameters = new ParameterResolver();
     }
 
 
 
     /**
-     * @param string $baseUrl
+     * @param string $url
      * @return $this
     */
-    public function setUrl(string $baseUrl)
+    public function setUrl(string $url)
     {
-        $this->baseUrl = $baseUrl;
+        $this->url = $url;
 
         return $this;
     }
@@ -185,6 +186,7 @@ class Router extends RouteCollection
         $methods    = $this->routeParameters->resolveMethods($methods);
         $path       = $this->routeParameters->resolvePath($path);
         $target     = $this->routeParameters->resolveTarget($target);
+
         $middleware = $this->routeParameters->getMiddlewares();
         $prefixName = $this->routeParameters->getPrefixName();
 
@@ -290,28 +292,31 @@ class Router extends RouteCollection
     }
 
 
-
     /**
      * @param string $name
      * @param array $params
      * @return string|false
+     * @throws \Exception
     */
     public function generate(string $name, array $params = [])
     {
-        if(! $this->has($name)) {
+        try {
+            $route = $this->getRoute($name);
+        }catch (\Exception $e) {
             return false;
         }
 
-        return $this->getRoute($name)->convertParams($params);
+        return $route->convertParams($params);
     }
 
 
     /**
-      * @param string $name
-      * @param array $params
-      * @return string
+     * @param string $name
+     * @param array $params
+     * @return string
+     * @throws \Exception
     */
-    public function url(string $name, array $params = [])
+    public function url(string $name, array $params = []): string
     {
         return $this->baseUrl . $this->generate($name, $params);
     }

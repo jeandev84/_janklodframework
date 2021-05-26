@@ -2,14 +2,14 @@
 namespace Jan\Component\Form\Type;
 
 
-use Jan\Component\Form\Type\Support\Type;
+use Jan\Component\Form\Type\Support\BaseType;
 
 
 /**
  * Class TextareaType
  * @package Jan\Component\Form\Type
 */
-class TextareaType extends Type
+class TextareaType extends BaseType
 {
 
     /**

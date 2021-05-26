@@ -2,7 +2,8 @@
 namespace Jan\Foundation\Form;
 
 
-use Jan\Component\Form\Type\Support\Type;
+use Jan\Component\Form\Type\Support\BaseType;
+
 
 /**
  * Class FomValue
@@ -12,18 +13,19 @@ class FomValue
 {
 
      /**
-      * @var Type
+      * @var FormView
      */
-     protected $formType;
+     protected $formView;
+
 
 
      /**
       * FomValue constructor.
-      * @param Type $formType
+      * @param FormView $formView
      */
-     public function __construct(Type $formType)
+     public function __construct(FormView $formView)
      {
-         $this->formType = $formType;
+         $this->formView = $formView;
      }
 
 
@@ -32,6 +34,6 @@ class FomValue
      */
      public function getValues()
      {
-         return $this->formType->getOption('value');
+         return $this->formView->getValue();
      }
 }

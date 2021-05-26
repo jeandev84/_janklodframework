@@ -1,12 +1,13 @@
 <?php
-namespace Jan\Component\Routing;
+namespace Jan\Component\Routing\Resolver;
 
 
 /**
- * Class RouteParameter
- * @package Jan\Component\Routing
+ * Class ParameterResolver
+ *
+ * @package Jan\Component\Routing\Resolver
 */
-class RouteParameter
+class ParameterResolver
 {
 
     const PATH_PREFIX               = '_path_prefix';

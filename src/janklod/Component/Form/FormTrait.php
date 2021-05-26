@@ -1,11 +1,11 @@
 <?php
-namespace Jan\Component\Form\Traits;
+namespace Jan\Component\Form;
 
 
 /**
  * Trait FormTrait
  *
- * @package Jan\Component\Form\Traits
+ * @package Jan\Component\Form
 */
 trait FormTrait
 {

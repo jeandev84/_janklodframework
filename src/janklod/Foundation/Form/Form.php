@@ -2,14 +2,13 @@
 namespace Jan\Foundation\Form;
 
 
-use Jan\Component\Form\Resolver\DataResolver;
 use Jan\Component\Form\Resolver\OptionResolver;
-use Jan\Component\Form\Traits\FormTrait;
-use Jan\Component\Form\Type\Support\Type;
+use Jan\Component\Form\FormTrait;
+use Jan\Component\Form\Type\Support\BaseType;
 use Jan\Component\Form\Type\TextType;
 use Jan\Component\Http\Request;
 use Jan\Foundation\Form\Contract\FormBuilderInterface;
-
+use Jan\Foundation\Form\Exception\FormViewException;
 
 
 /**
@@ -22,135 +21,62 @@ class Form implements FormBuilderInterface
     use FormTrait;
 
 
+    const KEY_CHILDREN     = 'children';
+    const KEY_HTML         = 'html';
+    const KEY_DATA         = 'data';
+    const KEY_DATA_CLASS   = 'data_class';
+    const KEY_ERRORS       = 'errors';
+    const KEY_VALUES       = 'values';
+
+
     /**
-     * @var array
+     * @var array[]
     */
     protected $vars = [
-        'children'    => [],
-        /* 'multiple'    => false, */
-        /* 'mapped'      => true, */
-        /* 'parent'      => true, */
-        'html'        => [],
-        'data_class'  => null,
-        'data'        => null,
-        'errors'      => [],
-        'values'      => []
+        self::KEY_CHILDREN    => [],
+        self::KEY_DATA_CLASS  => null,
+        self::KEY_DATA        => null,
+        self::KEY_ERRORS      => [],
+        self::KEY_VALUES      => [],
+        self::KEY_HTML        => [],
     ];
 
 
+
+    /**
+      * @var bool
+    */
     protected $submitted = false;
 
 
     /**
-     * Form constructor.
-     *
-     * @param $data
+     * @param string $child
+     * @param string $type
+     * @param array $options
+     * @return FormBuilderInterface
     */
-    public function __construct($data = null)
+    public function add(string $child, string $type, array $options = []): FormBuilderInterface
     {
-        if($data) {
-            $this->setVars(compact('data'));
-            $this->setVar('data_class', \get_class($data));
-        }
+         $resolver = new OptionResolver($options);
+         $formView = new FormView($child, TextType::class, $resolver);
 
-        // validator: $validator = new Validator($data);
+         if(! \is_null($type)) {
+             $formView = new FormView($child, $type, $resolver);
+         }
+
+         $this->vars[static::KEY_CHILDREN][$child] = $formView;
+         $this->vars[static::KEY_HTML][] = $formView->create();
+
+         return $this;
     }
 
 
-    /**
-     * @param Request $request
-     * @throws \ReflectionException
-    */
-    public function handleRequest(Request $request)
-    {
-        $data = null;
-        if($request->getMethod() === 'POST') {
-            // $data = $request->getRequests();
-            if($method = $request->request->get('_method')) {
-                if(\in_array($method, ['PUT', 'DELETE', 'PATCH'])) {
-                    $request->setMethod($method);
-                    $request->request->remove('_method');
-                }
-            }
-            $data = $request->getRequests();
-        }
-
-        if ($request->getMethod() === 'GET') {
-            $data = $request->queryParams->all();
-        }
-
-        // dump($request);
-
-        if($request->isPut()) { /* dd('YES IS PUT'); */ }
-
-        if($data) {
-            if ($dataClass = $this->getVar('data_class')) {
-
-                try {
-                    $reflectionClass = new \ReflectionClass($dataClass);
-                } catch (\ReflectionException $e) {
-                    throw $e;
-                }
-
-                $properties = $reflectionClass->getProperties();
-                foreach (array_keys($properties) as $key) {
-                    if ($this->getVar('mapped')) {
-                        if (!\array_key_exists($key, $data)) {
-                            throw new \Exception($key . ' cannot be mapped from class ' . $dataClass);
-                        }
-                    }
-                }
-            }
-
-            // Submitted
-            $this->submitted = true;
-
-            // Assignment
-            $objMapped = $this->getVar('data');
-            $reflectedObject = new \ReflectionObject($objMapped);
-
-            foreach ($reflectedObject->getProperties() as $property) {
-                if (\array_key_exists($property->getName(), $data)) {
-                     $property->setAccessible(true);
-                     if(property_exists($objMapped, $property->getName())) {
-                         $objMapped->{$property->getName()} = $data[$property->getName()];
-                     }
-                }
-            }
-
-            // Validation
-        }
-    }
-
-
-
-    /**
-     * @param string $path
-     * @param string $method
-     * @param array $attrs
-    */
-    public function start(string $path = '/', string $method = "POST", array $attrs = [])
-    {
-        $str = $this->makeAttributes($attrs);
-        /* ob_start(); */
-        $this->vars['html'][] = '<form action="'. $path .'" method="'. $method .'" '. $attrs .'>';
-        $this->started = true;
-    }
-
-
-    /**
-     * @param array $vars
-    */
-    public function setVars(array $vars)
-    {
-        $this->vars = array_merge($this->vars, $vars);
-    }
 
 
     /**
      * @param $key
      * @param $value
-     * @return Form
+     * @return $this
     */
     public function setVar($key, $value)
     {
@@ -161,171 +87,70 @@ class Form implements FormBuilderInterface
 
 
     /**
-     * @param $key
+     * @return array[]
+    */
+    public function getVars()
+    {
+        return $this->vars;
+    }
+
+
+    /**
+     * @param string $key
      * @param null $default
-     * @return mixed
+     * @return array|null
     */
-    public function getVar($key, $default = null)
+    public function getVar(string $key, $default = null): ?array
     {
-         return $this->vars[$key] ?? $default;
+        return $this->vars[$key] ?? $default;
+    }
+
+    public function getRows()
+    {
+        return '';
     }
 
 
-
-    /**
-     * @param $name
-     * @param Type $type
-     * @return $this
-    */
-    public function setRow($name, Type $type): Form
+    public function getRow()
     {
-        $this->vars['children'][$name] = $type;
 
-        return $this;
-    }
-
-
-
-    /**
-     * @param string $formatHtml
-     * @return $this
-    */
-    public function addFormat(string $formatHtml): Form
-    {
-        $this->vars['html'][] = $formatHtml;
-
-        return $this;
-    }
-
-
-
-    /**
-     * add form view items
-     *
-     * @param string $child
-     * @param string|null $type
-     * @param array $options
-     * @return Form
-     * @throws \Exception
-    */
-    public function add(string $child, ?string $type, array $options = []): Form
-    {
-        /*
-        $resolver   = new OptionResolver($options);
-        $formView = new FormView($child, $type, $resolver);
-        */
-
-        $resolver   = new OptionResolver($options);
-        $resolver->setOption('data', $this->vars['data']);
-        $row = new TextType($child, $resolver);
-
-        if(! \is_null($type)) {
-            $row = new $type($child, $resolver);
-        }
-
-        if($row instanceof Type) {
-            $this->vars['children'][$child] = $row;
-            $this->addFormat($row->build());
-        }
-
-        /* $this->vars['children'][] = $formView; */
-        return $this;
     }
 
 
     /**
-     * @return array
+     * @param string|null $child
+     * @return array|FomValue|null
     */
-    public function getRows(): array
+    public function getData(string $child = null)
     {
-        return $this->vars['children'];
+         $children = $this->getVar(static::KEY_CHILDREN);
+
+         if(\array_key_exists($child, $children)) {
+              $formView = $children[$child];
+              return new FomValue($formView);
+         }
+
+         return $this->getVar(static::KEY_DATA);
     }
 
 
     /**
-     * @param string $child
-     * @return mixed
-     * @throws \Exception
+     * @param Request $request
     */
-    public function getRow(string $child)
+    public function handleRequest(Request $request)
     {
-        /* $this->createView(true); */
-        if(! \array_key_exists($child, $this->getVar('children'))) {
-            throw new \Exception('child ('. $child . ') has not defined row.');
-        }
-
-        /** @var Type $row */
-        return $this->vars['children'][$child];
-    }
-
-
-
-    /**
-     * @param string $child
-     * @param array $options
-     * @return string
-     * @throws \Exception
-    */
-    public function createRow(string $child, array $options = []): string
-    {
-        $row = $this->getRow($child);
-        $row->getOptionResolver()->setOptions($options);
-        return $row->build();
-    }
-
-
-
-//    /**
-//     * @param string|null $child
-//     * @return mixed
-//    */
-//    public function getData(string $child = null): mixed
-//    {
-//        if ($child) {
-//
-//            $data = $this->vars[$child];
-//            $resolver = new DataResolver($data);
-//
-//            if(\is_object($data)) {
-//                //
-//            }
-//        }
-//
-//        if(\is_object($this->vars['data'])) {
-//            return $this->vars['data'];
-//        }
-//
-//        return null;
-//    }
-
-
-    /**
-     * @return string
-     */
-    public function end()
-    {
-        $this->vars['html'][] = "</form>";
-
-        /*
-        if($this->started) {
-            echo  $this->createView();
-        }
-        */
+        // TODO: Implement handleRequest() method.
     }
 
 
 
     /**
      * @param bool $disabled
-     * @return string|null
+     * @return string
     */
-    public function createView(bool $disabled = false)
+    public function createView(bool $disabled = false): string
     {
-        if($disabled === true) {
-            return null;
-        }
-
-        return implode("\n", $this->vars['html']);
+        return implode("\n", $this->vars[static::KEY_HTML]);
     }
 
 
@@ -334,7 +159,7 @@ class Form implements FormBuilderInterface
     */
     public function isSubmit(): bool
     {
-         return $this->submitted;
+        // TODO: Implement isSubmit() method.
     }
 
 
@@ -343,24 +168,6 @@ class Form implements FormBuilderInterface
     */
     public function isValid(): bool
     {
-        return $this->isSubmit() && empty($this->vars['errors']);
-    }
-
-
-    /**
-     * @param string|null $child
-     * @return mixed|null
-     * @throws \Exception
-    */
-    public function getData(string $child = null)
-    {
-        $arrChildren = $this->getVar('children');
-        if(\array_key_exists($child, $arrChildren)) {
-            $formType = $arrChildren[$child];
-            $formValue = new FomValue($formType);
-            return $formValue->getValues();
-        }
-
-        return $this->getVar('data');
+        // TODO: Implement isValid() method.
     }
 }

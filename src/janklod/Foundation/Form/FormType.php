@@ -3,7 +3,7 @@ namespace Jan\Foundation\Form;
 
 
 use Jan\Component\Form\Resolver\OptionResolver;
-use Jan\Contract\Form\FormBuilderInterface;
+use Jan\Foundation\Form\Contract\FormBuilderInterface;
 
 
 

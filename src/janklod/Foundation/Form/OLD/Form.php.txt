@@ -5,7 +5,7 @@ namespace Jan\Foundation\Form;
 use Jan\Component\Form\Resolver\DataResolver;
 use Jan\Component\Form\Resolver\OptionResolver;
 use Jan\Component\Form\Traits\FormTrait;
-use Jan\Component\Form\Type\Support\Type;
+use Jan\Component\Form\Type\Support\BaseType;
 use Jan\Component\Form\Type\TextType;
 use Jan\Component\Http\Request;
 use Jan\Contract\Form\FormBuilderInterface;
@@ -159,10 +159,10 @@ class Form implements FormBuilderInterface
 
     /**
      * @param $name
-     * @param Type $type
+     * @param BaseType $type
      * @return $this
     */
-    public function setRow($name, Type $type): Form
+    public function setRow($name, BaseType $type): Form
     {
         $this->vars['children'][$name] = $type;
 
@@ -207,7 +207,7 @@ class Form implements FormBuilderInterface
             $row = new $type($child, $resolver);
         }
 
-        if($row instanceof Type) {
+        if($row instanceof BaseType) {
             $this->vars['children'][$child] = $row;
             $this->addFormat($row->build());
         }
@@ -238,7 +238,7 @@ class Form implements FormBuilderInterface
             throw new \Exception('child ('. $child . ') has not defined row.');
         }
 
-        /** @var Type $row */
+        /** @var BaseType $row */
         return $this->vars['children'][$child];
     }
 
