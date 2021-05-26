@@ -105,15 +105,29 @@ class Form implements FormBuilderInterface
         return $this->vars[$key] ?? $default;
     }
 
+
+    /**
+     * @return string
+    */
     public function getRows()
     {
         return '';
     }
 
 
-    public function getRow()
+    /**
+     * @param string $child
+     * @return mixed
+     * @throws FormViewException
+    */
+    public function getRow(string $child)
     {
+        if(! \array_key_exists($child, $this->getVar(static::KEY_CHILDREN))) {
+            throw new FormViewException('child ('. $child . ') has not defined row.');
+        }
 
+        /** @var BaseType $row */
+        return $this->vars[static::KEY_CHILDREN][$child];
     }
 
 
@@ -143,13 +157,19 @@ class Form implements FormBuilderInterface
     }
 
 
-
     /**
-     * @param bool $disabled
+     * @param string|null $child
+     * @param array $options
      * @return string
+     * @throws FormViewException
     */
-    public function createView(bool $disabled = false): string
+    public function createView(string $child = null, array $options = [])
     {
+        /** @var FormView $formView */
+        if($child) {
+             return $this->getRow($child)->create();
+        }
+
         return implode("\n", $this->vars[static::KEY_HTML]);
     }
 
