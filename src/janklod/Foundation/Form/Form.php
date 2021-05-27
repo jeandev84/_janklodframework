@@ -140,7 +140,7 @@ class Form implements FormBuilderInterface
          $children = $this->getVar(static::KEY_CHILDREN);
 
          if(\array_key_exists($child, $children)) {
-              return new FomValue($children[$child]);
+              return new FomValue($child, $this->vars[static::KEY_DATA]);
          }
 
          return $this->getVar(static::KEY_DATA);
@@ -185,7 +185,7 @@ class Form implements FormBuilderInterface
     */
     public function isSubmit(): bool
     {
-        // TODO: Implement isSubmit() method.
+        return $this->submitted;
     }
 
 
