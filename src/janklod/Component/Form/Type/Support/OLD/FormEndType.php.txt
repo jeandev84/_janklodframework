@@ -1,0 +1,16 @@
+<?php
+namespace Jan\Component\Form\Type\Support;
+
+
+/**
+ * Class FormEndType
+ * @package Jan\Component\Form\Type\Support
+*/
+class FormEndType extends BaseType
+{
+
+    public function build(): string
+    {
+       return '</form>';
+    }
+}

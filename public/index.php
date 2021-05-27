@@ -70,8 +70,11 @@ $kernel->terminate($request, $response);
 
 <?php
 
-$form = new \Jan\Foundation\Form\Form();
+$user = new \App\Entity\User();
+$form = new \Jan\Foundation\Form\Form($user);
 
+
+//$form->start();
 $form->add('email', EmailType::class, [
    'label' => 'Е-майл',
    'attr'  => [
@@ -98,7 +101,39 @@ $form->add('email', EmailType::class, [
     ]
 ]);
 
-dump($form->getVars());
+//$form->end();
 
-//require_once __DIR__.'/html/form.php';
-require_once __DIR__.'/html/form_row.php';
+// $form->createView();
+
+dump($form->getVars());
+dump($form->getData());
+dump($form->getData('username'));
+dump($form->getData('username')->getValues());
+
+dump($form);
+
+require_once __DIR__.'/html/form.php';
+//require_once __DIR__.'/html/form_row.php';
+
+?>
+
+<?php
+
+$connection = null;
+$em = new \Jan\Foundation\ORM\Canon\EntityManager($connection);
+
+// map all entities
+$entities = [
+    'App\\Entity\\User',
+    'App\\Entity\\Region',
+    'App\\Entity\\Post',
+];
+
+foreach ($entities as $entityClass) {
+    $repositoryClass = str_replace('App\\Entity\\', 'App\\Repository\\', $entityClass);
+    $repositoryClass .= 'Repository';
+    $manager = new \Jan\Foundation\ORM\Canon\EntityManager();
+    $repository = new $repositoryClass($manager);
+    $em->setRepository($entityClass, $repository);
+}
+

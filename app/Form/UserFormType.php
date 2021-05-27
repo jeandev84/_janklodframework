@@ -8,8 +8,9 @@ use Jan\Component\Form\Type\EmailType;
 use Jan\Component\Form\Type\PasswordType;
 use Jan\Component\Form\Type\TextareaType;
 use Jan\Component\Form\Type\TextType;
-use Jan\Contract\Form\FormBuilderInterface;
+use Jan\Foundation\Form\Contract\FormBuilderInterface;
 use Jan\Foundation\Form\FormType;
+
 
 
 /**

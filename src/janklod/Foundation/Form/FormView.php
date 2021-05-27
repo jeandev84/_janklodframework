@@ -20,10 +20,12 @@ class FormView
     protected $child;
 
 
+
     /**
-     * @var BaseType
+     * @var string
     */
-    protected $typeObject;
+    protected $typeClass;
+
 
 
 
@@ -38,11 +40,28 @@ class FormView
     */
     public function __construct(string $child, string $type, OptionResolver $resolver)
     {
-        $this->child      = $child;
-        $this->resolver   = $resolver;
-        $this->typeObject  = $this->createNewType($child, $type, $resolver);
+        $this->child       = $child;
+        $this->resolver    = $resolver;
+        $this->typeClass   = $type;
     }
 
+
+    /**
+     * @return string
+    */
+    public function getChild(): string
+    {
+        return $this->child;
+    }
+
+
+    /**
+     * @return string
+    */
+    public function getTypeClass(): string
+    {
+        return $this->typeClass;
+    }
 
     /**
      * @return OptionResolver
@@ -58,7 +77,8 @@ class FormView
     */
     public function create()
     {
-         return $this->typeObject->build();
+         $inputObject = $this->createNewType($this->typeClass, $this->child, $this->resolver);
+         return $inputObject->build();
     }
 
 
@@ -71,12 +91,12 @@ class FormView
 
 
     /**
-     * @param string $child
      * @param string $type
+     * @param string $child
      * @param OptionResolver $resolver
      * @return BaseType
     */
-    protected function createNewType(string $child, string $type, OptionResolver $resolver): BaseType
+    protected function createNewType(string $type, string $child, OptionResolver $resolver): BaseType
     {
           return new $type($child, $resolver);
     }

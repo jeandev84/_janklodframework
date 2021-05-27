@@ -33,6 +33,9 @@ class User
      public $address;
 
 
+     /**
+      * @var array
+     */
      public $roles = [];
 
 
@@ -43,9 +46,10 @@ class User
      {
      }
 
+
     /**
      * @return int
-     */
+    */
     public function getId(): int
     {
         return $this->id;

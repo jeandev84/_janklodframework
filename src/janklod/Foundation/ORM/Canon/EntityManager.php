@@ -2,9 +2,11 @@
 namespace Jan\Foundation\ORM\Canon;
 
 
+use Jan\Component\Database\Contract\ConnectionInterface;
 use Jan\Foundation\ORM\Canon\Contract\EntityManagerInterface;
 use Jan\Foundation\ORM\Canon\Repository\EntityRepository;
 use Jan\Foundation\ORM\Canon\Repository\Exception\EntityRepositoryException;
+use Jan\Foundation\ORM\Canon\Repository\ServiceRepository;
 
 
 /**
@@ -37,12 +39,47 @@ class EntityManager implements EntityManagerInterface
       protected $entityDeletions = [];
 
 
+      /**
+        * @var ConnectionInterface
+      */
+      protected $connection;
+
+
+      /**
+       * EntityManager constructor.
+       * @param ConnectionInterface|null $connection
+      */
+      public function __construct(ConnectionInterface $connection = null)
+      {
+            if($connection) {
+                $this->setConnection($connection);
+            }
+      }
+
+
+      /**
+        * @param ConnectionInterface $connection
+      */
+      public function setConnection(ConnectionInterface $connection)
+      {
+          $this->connection = $connection;
+      }
+
+
+      /**
+       * @return ConnectionInterface
+      */
+      public function getConnection()
+      {
+           return $this->connection;
+      }
+
 
       /**
        * @param string $entityClass
-       * @param EntityRepository $repository
+       * @param ServiceRepository $repository
       */
-      public function setRepository(string $entityClass, EntityRepository $repository)
+      public function setRepository(string $entityClass, ServiceRepository $repository)
       {
             $this->repositories[$entityClass] = $repository;
       }
@@ -50,10 +87,10 @@ class EntityManager implements EntityManagerInterface
 
       /**
        * @param string $entityClass
-       * @return EntityRepository
+       * @return ServiceRepository
        * @throws EntityRepositoryException
       */
-      public function getRepository(string $entityClass): EntityRepository
+      public function getRepository(string $entityClass): ServiceRepository
       {
           if(! \array_key_exists($entityClass, $this->repositories)) {
                throw new EntityRepositoryException(
@@ -62,6 +99,15 @@ class EntityManager implements EntityManagerInterface
           }
 
           return $this->repositories[$entityClass];
+      }
+
+
+      /**
+       * @return array
+      */
+      public function getRepositories(): array
+      {
+          return $this->repositories;
       }
 
 

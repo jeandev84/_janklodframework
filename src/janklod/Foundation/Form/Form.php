@@ -5,6 +5,8 @@ namespace Jan\Foundation\Form;
 use Jan\Component\Form\Resolver\OptionResolver;
 use Jan\Component\Form\FormTrait;
 use Jan\Component\Form\Type\Support\BaseType;
+use Jan\Component\Form\Type\Support\FormEndType;
+use Jan\Component\Form\Type\Support\FormStartType;
 use Jan\Component\Form\Type\TextType;
 use Jan\Component\Http\Request;
 use Jan\Foundation\Form\Contract\FormBuilderInterface;
@@ -18,38 +20,101 @@ use Jan\Foundation\Form\Exception\FormViewException;
 class Form implements FormBuilderInterface
 {
 
-    use FormTrait;
-
-
-    const KEY_CHILDREN     = 'children';
-    const KEY_HTML         = 'html';
-    const KEY_DATA         = 'data';
-    const KEY_DATA_CLASS   = 'data_class';
-    const KEY_ERRORS       = 'errors';
-    const KEY_VALUES       = 'values';
+    const KEY_FORM_START     = 'form_start';
+    const KEY_FORM_END       = 'form_end';
+    const KEY_CHILDREN       = 'children';
+    const KEY_HTML           = 'html';
+    const KEY_DATA           = 'data';
+    const KEY_DATA_CLASS     = 'data_class';
+    const KEY_ERRORS         = 'errors';
+    const KEY_METHOD         = 'method';
+    const KEY_ACTION         = 'action';
+    const KEY_NAME           = 'name';
+    const KEY_SUBMIT_STATUS  = 'submitted';
 
 
     /**
-     * @var array[]
+     * @var array
     */
     protected $vars = [
-        self::KEY_CHILDREN    => [],
-        self::KEY_DATA_CLASS  => null,
-        self::KEY_DATA        => null,
-        self::KEY_ERRORS      => [],
-        self::KEY_VALUES      => [],
-        self::KEY_HTML        => [],
+        self::KEY_FORM_START    => null,
+        self::KEY_FORM_END      => '</form>',
+        self::KEY_CHILDREN      => [],
+        self::KEY_DATA_CLASS    => null,
+        self::KEY_DATA          => null,
+        self::KEY_ERRORS        => [],
+        self::KEY_HTML          => [],
+        self::KEY_METHOD        => 'POST',
+        self::KEY_ACTION        => '/',
+        self::KEY_NAME          => 'form',
+        self::KEY_SUBMIT_STATUS => false
     ];
 
 
+    public function __construct($data = null)
+    {
+          if($data) {
+              $this->setData($data);
+          }
+    }
+
+
 
     /**
-      * @var bool
+     * @param $name
     */
-    protected $submitted = false;
+    public function setName($name)
+    {
+        $this->setVars(compact('name'));
+    }
 
 
     /**
+     * @return array|null
+    */
+    public function getName()
+    {
+        return $this->getVar(static::KEY_NAME);
+    }
+
+
+    /**
+     * @param string $method
+     * @param string $action
+     * @param array $attrs
+     * @return FormBuilderInterface
+    */
+    public function start(string $method = 'POST', string $action = '/', array $attrs = [])
+    {
+         $defaults = compact('method', 'action');
+         $this->setVars($defaults);
+
+         $attributes = array_merge($defaults, $attrs);
+         $child = $attributes[static::KEY_NAME] ?? $this->getName();
+         $attributes['attr'] = $attributes;
+
+         $resolver = new OptionResolver($attributes);
+         $formView = new FormView($child, FormStartType::class, $resolver);
+
+         $this->setVar(static::KEY_FORM_START, $formView);
+         $this->addHtml($formView);
+    }
+
+
+    /**
+     * @return string
+    */
+    public function end()
+    {
+        if(!\is_null($this->vars[static::KEY_FORM_START])) {
+            return $this->buildHtml().$this->getVar(static::KEY_FORM_START);
+        }
+    }
+
+
+    /**
+     * add form child
+     *
      * @param string $child
      * @param string $type
      * @param array $options
@@ -64,13 +129,35 @@ class Form implements FormBuilderInterface
              $formView = new FormView($child, $type, $resolver);
          }
 
-         $this->vars[static::KEY_CHILDREN][$child] = $formView;
-         $this->vars[static::KEY_HTML][] = $formView->create();
+         $this->addChild($formView);
+         $this->addHtml($formView);
 
          return $this;
     }
 
 
+    /**
+     * @param FormView $formView
+     * @return Form
+    */
+    public function addChild(FormView $formView): Form
+    {
+        $this->vars[static::KEY_CHILDREN][$formView->getChild()] = $formView;
+
+        return $this;
+    }
+
+
+    /**
+     * @param FormView $formView
+     * @return $this
+    */
+    public function addHtml(FormView $formView)
+    {
+        $this->vars[static::KEY_HTML][$formView->getChild()] = $formView->create();
+
+        return $this;
+    }
 
 
     /**
@@ -78,7 +165,7 @@ class Form implements FormBuilderInterface
      * @param $value
      * @return $this
     */
-    public function setVar($key, $value)
+    public function setVar($key, $value): Form
     {
         $this->vars[$key] = $value;
 
@@ -86,10 +173,20 @@ class Form implements FormBuilderInterface
     }
 
 
+
+    /**
+     * @param array $vars
+    */
+    public function setVars(array $vars)
+    {
+         $this->vars = array_merge($this->vars, $vars);
+    }
+
+
     /**
      * @return array[]
     */
-    public function getVars()
+    public function getVars(): array
     {
         return $this->vars;
     }
@@ -98,20 +195,20 @@ class Form implements FormBuilderInterface
     /**
      * @param string $key
      * @param null $default
-     * @return array|null
+     * @return mixed
     */
-    public function getVar(string $key, $default = null): ?array
+    public function getVar(string $key, $default = null)
     {
         return $this->vars[$key] ?? $default;
     }
 
 
     /**
-     * @return string
+     * @return array
     */
-    public function getRows()
+    public function getChildren(): array
     {
-        return '';
+        return $this->vars[static::KEY_CHILDREN];
     }
 
 
@@ -120,7 +217,7 @@ class Form implements FormBuilderInterface
      * @return mixed
      * @throws FormViewException
     */
-    public function getRow(string $child)
+    public function getChild(string $child)
     {
         if(! \array_key_exists($child, $this->getVar(static::KEY_CHILDREN))) {
             throw new FormViewException('child ('. $child . ') has not defined row.');
@@ -129,6 +226,7 @@ class Form implements FormBuilderInterface
         /** @var BaseType $row */
         return $this->vars[static::KEY_CHILDREN][$child];
     }
+
 
 
     /**
@@ -145,6 +243,17 @@ class Form implements FormBuilderInterface
 
          return $this->getVar(static::KEY_DATA);
     }
+
+
+
+    /**
+     * @param $data
+    */
+    public function setData($data)
+    {
+        $this->vars[static::KEY_DATA] = $data;
+    }
+
 
 
     /**
@@ -168,14 +277,27 @@ class Form implements FormBuilderInterface
         if($child) {
 
              /** @var OptionResolver $resolver */
-             $resolver = $this->getRow($child)->getOptionResolver();
+             $resolver = $this->getChild($child)->getOptionResolver();
              if($options) {
                  $resolver->setOptions($options);
              }
 
-             return $this->getRow($child)->create();
+             return $this->getChild($child)->create();
         }
 
+        if(\is_null($this->vars[static::KEY_FORM_START])) {
+            return $this->buildHtml();
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @return string
+    */
+    public function buildHtml(): string
+    {
         return implode("\n", $this->vars[static::KEY_HTML]);
     }
 
@@ -185,7 +307,7 @@ class Form implements FormBuilderInterface
     */
     public function isSubmit(): bool
     {
-        return $this->submitted;
+        return $this->getVar(static::KEY_SUBMIT_STATUS);
     }
 
 
@@ -194,6 +316,6 @@ class Form implements FormBuilderInterface
     */
     public function isValid(): bool
     {
-        // TODO: Implement isValid() method.
+        return true;
     }
 }

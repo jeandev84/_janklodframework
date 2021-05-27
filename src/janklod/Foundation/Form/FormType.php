@@ -14,15 +14,26 @@ use Jan\Foundation\Form\Contract\FormBuilderInterface;
 abstract class FormType
 {
 
+        /**
+         * @var array
+        */
+        protected $options = [];
+
+
+        public function __construct()
+        {
+        }
+
+
+
+
        /**
-        * @param FormBuilderInterface $builder
-        * @param array $options
+        * @param OptionResolver $resolver
        */
-       abstract  public function build(FormBuilderInterface $builder, array $options);
+       public function configureOptions(OptionResolver $resolver)
+       {
+           $resolver->setOptions([
 
-
-      /**
-       * @param OptionResolver $resolver
-      */
-      abstract  public function configureOptions(OptionResolver $resolver);
+           ]);
+       }
 }

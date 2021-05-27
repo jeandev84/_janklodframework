@@ -13,14 +13,16 @@ class OptionResolver
        * @var array
       */
       protected $options = [
-          'label'       => '',
-          'attr'        => [],
-          'mapped'      => true,
-          'data'        => null,
-          'constraints' => [],
-          'multiple'    => false,
-          'parent'      => null,
-          'values'      => []
+          'label'         => '',
+          'attr'          => [],
+          'mapped'        => true,
+          'data'          => null,
+          'constraints'   => [],
+          'multiple'      => false,
+          'parent'        => null,
+          'value'         => null,
+          'surround'      => '<div>',
+          'surround_attr' => []
       ];
 
 
