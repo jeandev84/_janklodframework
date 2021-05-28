@@ -24,6 +24,13 @@ class User
      /**
       * @var string
      */
+     public $username;
+
+
+
+     /**
+      * @var string
+     */
      public $password;
 
 
@@ -133,6 +140,26 @@ class User
     public function setRoles(array $roles): User
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string
+    */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     * @return User
+    */
+    public function setUsername(string $username): User
+    {
+        $this->username = $username;
 
         return $this;
     }

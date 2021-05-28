@@ -14,9 +14,11 @@
 <body>
 <h2 class="text-center">Sign up</h2>
 <div class="container">
-     <?= $form->createView() ?>
-    <input type="hidden" name="_method" value="PUT">
-    <button type="submit" class="btn btn-primary">Отправить</button>
+    <form action="/" method="POST">
+        <?= $form->createView() ?>
+        <input type="hidden" name="_method" value="PUT">
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

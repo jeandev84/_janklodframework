@@ -71,10 +71,17 @@ $kernel->terminate($request, $response);
 <?php
 
 $user = new \App\Entity\User();
-$form = new \Jan\Foundation\Form\Form($user);
+$user->setEmail('jeanyao@ymail.com')
+     ->setUsername('jeanyao123')
+     ->setPassword('123')
+;
+/* $form = new \Jan\Foundation\Form\Form($user); */
+$form = new \Jan\Foundation\Form\Form();
+$form->setVar('data_class', \App\Entity\User::class);
+$form->setData(new \App\Entity\User());
 
 
-//$form->start();
+/* $form->start(); */
 $form->add('email', EmailType::class, [
    'label' => 'Е-майл',
    'attr'  => [
@@ -101,16 +108,25 @@ $form->add('email', EmailType::class, [
     ]
 ]);
 
-//$form->end();
-
-// $form->createView();
-
-dump($form->getVars());
+/* $form->end(); */
+/* $form->createView(); */
+/* dump($form->getVars()); */
+/*
 dump($form->getData());
 dump($form->getData('username'));
 dump($form->getData('username')->getValues());
+*/
 
 dump($form);
+
+$form->handleRequest($request);
+
+if($form->isSubmit()) {
+    $user = $form->getData();
+    dump($user);
+}
+
+
 
 require_once __DIR__.'/html/form.php';
 //require_once __DIR__.'/html/form_row.php';

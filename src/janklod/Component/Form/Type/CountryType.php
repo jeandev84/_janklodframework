@@ -16,4 +16,10 @@ class CountryType extends InputType
     {
         // TODO: Implement getName() method.
     }
+
+
+    public function build(): string
+    {
+         return '';
+    }
 }

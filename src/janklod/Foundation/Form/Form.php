@@ -251,7 +251,7 @@ class Form implements FormBuilderInterface
     */
     public function setData($data)
     {
-        $this->vars[static::KEY_DATA] = $data;
+        $this->setVar(static::KEY_DATA, $data);
     }
 
 
@@ -261,7 +261,46 @@ class Form implements FormBuilderInterface
     */
     public function handleRequest(Request $request)
     {
-        // TODO: Implement handleRequest() method.
+         $data = null;
+
+        if($request->getMethod() === 'POST') {
+            /* $data = $request->getRequests(); */
+            if($method = $request->request->get('_method')) {
+                if(\in_array($method, ['PUT', 'DELETE', 'PATCH'])) {
+                    $request->setMethod($method);
+                    $request->request->remove('_method');
+                }
+            }
+
+            $data = $request->getRequests();
+        }
+
+         if ($request->getMethod() === 'GET') {
+            $data = $request->queryParams->all();
+         }
+
+         if($request->isPut()) { /* dd('YES IS PUT'); */ }
+
+         if($data) {
+
+             if($dataClass = $this->getVar(static::KEY_DATA_CLASS)) {
+
+             }
+
+             if($objMapped = $this->getVar(self::KEY_DATA)) {
+                 $reflectedObject = new \ReflectionObject($objMapped);
+                 foreach ($reflectedObject->getProperties() as $property) {
+                     $property->setAccessible(true);
+                     if(\array_key_exists($field = $property->getName(), $data)) {
+                         $property->setValue($objMapped, $data[$field]);
+                     }
+                 }
+
+                 $this->setData($objMapped);
+             }
+
+             $this->setVar(static::KEY_SUBMIT_STATUS, true);
+         }
     }
 
 
@@ -298,7 +337,7 @@ class Form implements FormBuilderInterface
     */
     public function buildHtml(): string
     {
-        return implode("\n", $this->vars[static::KEY_HTML]);
+        return implode("\n", $this->getVar(static::KEY_HTML));
     }
 
 
