@@ -47,4 +47,26 @@ class ObjectMapper
 
         return $mappedProperties;
     }
+
+
+    /**
+     * @param $objMapped
+     * @param array $data
+     * @return mixed
+     * @throws Exception
+    */
+    public function assign($objMapped, array $data)
+    {
+        $reflectedObject = new \ReflectionObject($objMapped);
+        foreach ($reflectedObject->getProperties() as $property) {
+            $property->setAccessible(true);
+            if(! \array_key_exists($field = $property->getName(), $data)) {
+                throw new Exception('Cannot map property ('. $field .' )');
+            }
+
+            $property->setValue($objMapped, $data[$field]);
+        }
+
+        return $objMapped;
+    }
 }

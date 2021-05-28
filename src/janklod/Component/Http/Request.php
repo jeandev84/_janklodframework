@@ -346,12 +346,12 @@ class Request
     }
 
 
-    public function getRequests()
+    /**
+     * @return array
+    */
+    public function getRequestData()
     {
-            return array_merge(
-                $this->request->all(),
-                $this->files->all()
-            );
+         return array_merge($this->request->all(), $this->files->all());
     }
 
     /**

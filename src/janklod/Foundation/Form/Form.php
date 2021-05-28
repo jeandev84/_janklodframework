@@ -261,7 +261,7 @@ class Form implements FormBuilderInterface
     */
     public function handleRequest(Request $request)
     {
-         $data = null;
+        $data = null;
 
         if($request->getMethod() === 'POST') {
             /* $data = $request->getRequests(); */
@@ -272,7 +272,7 @@ class Form implements FormBuilderInterface
                 }
             }
 
-            $data = $request->getRequests();
+            $data = $request->getRequestData();
         }
 
          if ($request->getMethod() === 'GET') {
@@ -283,17 +283,26 @@ class Form implements FormBuilderInterface
 
          if($data) {
 
-             if($dataClass = $this->getVar(static::KEY_DATA_CLASS)) {
-
+             if(! $dataClass = $this->getVar(static::KEY_DATA_CLASS)) {
+                  $this->setData($data);
              }
 
-             if($objMapped = $this->getVar(self::KEY_DATA)) {
-                 $reflectedObject = new \ReflectionObject($objMapped);
-                 foreach ($reflectedObject->getProperties() as $property) {
-                     $property->setAccessible(true);
-                     if(\array_key_exists($field = $property->getName(), $data)) {
-                         $property->setValue($objMapped, $data[$field]);
+             // TODO via DI container make object
+             if(! $objMapped = $this->getVar(self::KEY_DATA)) {
+                 $objMapped = $this->getVar(self::KEY_DATA);
+             }
+
+             if($objMapped) {
+                 try {
+                     $reflectedObject = new \ReflectionObject($objMapped);
+                     foreach ($reflectedObject->getProperties() as $property) {
+                         $property->setAccessible(true);
+                         if(\array_key_exists($field = $property->getName(), $data)) {
+                             $property->setValue($objMapped, trim($data[$field]));
+                         }
                      }
+                 } catch (\ReflectionException $e) {
+                     throw $e;
                  }
 
                  $this->setData($objMapped);
