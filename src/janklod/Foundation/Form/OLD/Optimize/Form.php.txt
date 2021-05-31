@@ -20,7 +20,7 @@ use Jan\Foundation\Form\Exception\FormViewException;
 class Form implements FormBuilderInterface
 {
 
-    const KEY_FORM_BEGIN     = 'form_start';
+    const KEY_FORM_START     = 'form_start';
     const KEY_FORM_END       = 'form_end';
     const KEY_CHILDREN       = 'children';
     const KEY_HTML           = 'html';
@@ -37,7 +37,8 @@ class Form implements FormBuilderInterface
      * @var array
     */
     protected $vars = [
-        self::KEY_FORM_BEGIN    => false,
+        self::KEY_FORM_START    => null,
+        self::KEY_FORM_END      => '</form>',
         self::KEY_CHILDREN      => [],
         self::KEY_DATA_CLASS    => null,
         self::KEY_DATA          => null,
@@ -95,10 +96,8 @@ class Form implements FormBuilderInterface
          $resolver = new OptionResolver($attributes);
          $formView = new FormView($child, FormStartType::class, $resolver);
 
-         $this->setVar(static::KEY_FORM_BEGIN, true);
+         $this->setVar(static::KEY_FORM_START, $formView);
          $this->addHtml($formView);
-
-         return $this;
     }
 
 
@@ -107,8 +106,8 @@ class Form implements FormBuilderInterface
     */
     public function end()
     {
-        if(!\is_null($this->vars[static::KEY_FORM_BEGIN])) {
-            return $this->buildHtml(['</form>']);
+        if(!\is_null($this->vars[static::KEY_FORM_START])) {
+            return $this->buildHtml().$this->getVar(static::KEY_FORM_START);
         }
     }
 
@@ -267,26 +266,14 @@ class Form implements FormBuilderInterface
 
         switch ($requestMethod) {
             case 'POST':
-                /* $data = $request->getRequests(); */
-                if($method = $request->request->get('_method')) {
-                    if(\in_array($method, ['PUT', 'DELETE', 'PATCH'])) {
-                        $request->setMethod($method);
-                        $request->request->remove('_method');
-                    }
-                }
-
-                $data = $request->getRequestData();
                 break;
             case 'GET':
-                $data = $request->queryParams->all();
                 break;
             default:
                 break;
         }
-
-        /*
         if($request->getMethod() === 'POST') {
-            // $data = $request->getRequests();
+            /* $data = $request->getRequests(); */
             if($method = $request->request->get('_method')) {
                 if(\in_array($method, ['PUT', 'DELETE', 'PATCH'])) {
                     $request->setMethod($method);
@@ -297,14 +284,13 @@ class Form implements FormBuilderInterface
             $data = $request->getRequestData();
         }
 
-        if ($request->getMethod() === 'GET') {
+         if ($request->getMethod() === 'GET') {
             $data = $request->queryParams->all();
-        }
-        */
+         }
 
-        if($request->isPut()) { /* dd('YES IS PUT'); */ }
+         if($request->isPut()) { /* dd('YES IS PUT'); */ }
 
-        if($data) {
+         if($data) {
 
              if(! $dataClass = $this->getVar(static::KEY_DATA_CLASS)) {
                   $this->setData($data);
@@ -356,7 +342,7 @@ class Form implements FormBuilderInterface
              return $this->getChild($child)->create();
         }
 
-        if(\is_null($this->vars[static::KEY_FORM_BEGIN])) {
+        if(\is_null($this->vars[static::KEY_FORM_START])) {
             return $this->buildHtml();
         }
 
@@ -365,13 +351,11 @@ class Form implements FormBuilderInterface
 
 
     /**
-     * @param array $appends
      * @return string
     */
-    public function buildHtml(array $appends = []): string
+    public function buildHtml(): string
     {
-        $htmlParts = array_merge($this->getVar(static::KEY_HTML), $appends);
-        return implode("\n", $htmlParts);
+        return implode("\n", $this->getVar(static::KEY_HTML));
     }
 
 

@@ -124,9 +124,11 @@ $form->handleRequest($request);
 if($form->isSubmit()) {
     $user = $form->getData();
     dump($user);
+    $email = $form->getData('email');
+    dump($email->getValues());
 }
 
-
+dump($form);
 
 require_once __DIR__.'/html/form.php';
 //require_once __DIR__.'/html/form_row.php';
