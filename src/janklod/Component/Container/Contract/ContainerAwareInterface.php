@@ -4,10 +4,10 @@ namespace Jan\Component\Container\Contract;
 
 
 /**
- * Interface ContainerInterface
+ * Interface ContainerAwareInterface
  * @package Jan\Component\DependencyInjection\Contract
 */
-interface ContainerInterface
+interface ContainerAwareInterface
 {
 
       /**

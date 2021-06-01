@@ -11,6 +11,7 @@ use Jan\Component\Form\Type\PasswordType;
 use Jan\Component\Form\Type\TextareaType;
 use Jan\Component\Form\Type\TextType;
 
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 
@@ -66,15 +67,30 @@ $response->send();
 
 $kernel->terminate($request, $response);
 
-?>
 
-<?php
 
+echo "<h2>User1</h2>";
+
+$em = new \Jan\Component\Database\Example\EntityManager();
+$repo = new \Jan\Component\Database\Example\EntityRepository($em);
+
+$user = $repo->findOne(1);
+$user->setUsername('joe')
+     ->setEmail('johndoe@ymail.com')
+     ->setPassword('john123')
+     ->setAddress('Golovynskoe shosse dom 8k 2a');
+
+
+$em->flush();
+
+
+echo "<h2>User 2</h2>";
 $user = new \App\Entity\User();
 $user->setEmail('jeanyao@ymail.com')
      ->setUsername('jeanyao123')
      ->setPassword('123')
 ;
+
 /* $form = new \Jan\Foundation\Form\Form($user); */
 $form = new \Jan\Foundation\Form\Form();
 $form->setVar('data_class', \App\Entity\User::class);
@@ -130,8 +146,8 @@ if($form->isSubmit()) {
 
 dump($form);
 
-require_once __DIR__.'/html/form.php';
-//require_once __DIR__.'/html/form_row.php';
+//require_once __DIR__.'/html/form.php';
+require_once __DIR__.'/html/form_row.php';
 
 ?>
 
@@ -154,4 +170,7 @@ foreach ($entities as $entityClass) {
     $repository = new $repositoryClass($manager);
     $em->setRepository($entityClass, $repository);
 }
+
+
+
 

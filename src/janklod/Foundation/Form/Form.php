@@ -20,8 +20,8 @@ use Jan\Foundation\Form\Exception\FormViewException;
 class Form implements FormBuilderInterface
 {
 
-    const KEY_FORM_BEGIN     = 'form_start';
-    const KEY_FORM_END       = 'form_end';
+    const KEY_FORM_BEGIN     = 'started';
+    const KEY_FORM_VALID     = 'valid';
     const KEY_CHILDREN       = 'children';
     const KEY_HTML           = 'html';
     const KEY_DATA           = 'data';
@@ -37,7 +37,6 @@ class Form implements FormBuilderInterface
      * @var array
     */
     protected $vars = [
-        self::KEY_FORM_BEGIN    => false,
         self::KEY_CHILDREN      => [],
         self::KEY_DATA_CLASS    => null,
         self::KEY_DATA          => null,
@@ -46,7 +45,9 @@ class Form implements FormBuilderInterface
         self::KEY_METHOD        => 'POST',
         self::KEY_ACTION        => '/',
         self::KEY_NAME          => 'form',
-        self::KEY_SUBMIT_STATUS => false
+        self::KEY_FORM_BEGIN    => false,
+        self::KEY_SUBMIT_STATUS => false,
+        self::KEY_FORM_VALID    => false
     ];
 
 
@@ -107,7 +108,7 @@ class Form implements FormBuilderInterface
     */
     public function end()
     {
-        if(!\is_null($this->vars[static::KEY_FORM_BEGIN])) {
+        if($this->vars[static::KEY_FORM_BEGIN]) {
             return $this->buildHtml(['</form>']);
         }
     }
@@ -349,6 +350,7 @@ class Form implements FormBuilderInterface
 
              /** @var OptionResolver $resolver */
              $resolver = $this->getChild($child)->getOptionResolver();
+
              if($options) {
                  $resolver->setOptions($options);
              }
@@ -356,7 +358,7 @@ class Form implements FormBuilderInterface
              return $this->getChild($child)->create();
         }
 
-        if(\is_null($this->vars[static::KEY_FORM_BEGIN])) {
+        if(! $this->vars[static::KEY_FORM_BEGIN]) {
             return $this->buildHtml();
         }
 
@@ -389,6 +391,19 @@ class Form implements FormBuilderInterface
     */
     public function isValid(): bool
     {
-        return true;
+        return $this->isSubmit() && true;
+    }
+
+
+    /**
+     * @param Request $request
+     * @return bool
+     * @throws \ReflectionException
+    */
+    public function parse(Request $request)
+    {
+        $this->handleRequest($request);
+
+        return $this->isValid();
     }
 }

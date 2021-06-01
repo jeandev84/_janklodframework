@@ -49,8 +49,11 @@ class User
      /**
       * User constructor.
      */
-     public function __construct()
+     public function __construct($id = null)
      {
+          if($id) {
+              $this->id = $id;
+          }
      }
 
 
