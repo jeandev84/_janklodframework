@@ -69,6 +69,27 @@ $kernel->terminate($request, $response);
 
 
 
+$router = new \Jan\Component\Routing\Router();
+
+$router->get('/', function () {
+    return 'Hello World!';
+}, 'home');
+
+$router->get('/about', '\App\Controller\PageController@about');
+
+
+dump($router->getRoutesByMethod());
+
+
+$route = $router->match($_SERVER['REQUEST_METHOD'], $uri = $_SERVER['REQUEST_URI']);
+
+if(! $route) {
+    dd('Not found ( '. $uri . ' )');
+}
+
+dd($route);
+
+
 echo "<h2>User1</h2>";
 
 $em = new \Jan\Component\Database\Example\EntityManager();
@@ -93,7 +114,7 @@ $user->setEmail('jeanyao@ymail.com')
 
 /* $form = new \Jan\Foundation\Form\Form($user); */
 $form = new \Jan\Foundation\Form\Form();
-$form->setVar('data_class', \App\Entity\User::class);
+$form->config('data_class', \App\Entity\User::class);
 $form->setData(new \App\Entity\User());
 
 

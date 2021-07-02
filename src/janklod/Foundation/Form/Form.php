@@ -26,6 +26,7 @@ class Form implements FormBuilderInterface
     const KEY_HTML           = 'html';
     const KEY_DATA           = 'data';
     const KEY_DATA_CLASS     = 'data_class';
+    const KEY_VALUES         = 'values';
     const KEY_ERRORS         = 'errors';
     const KEY_METHOD         = 'method';
     const KEY_ACTION         = 'action';
@@ -36,10 +37,11 @@ class Form implements FormBuilderInterface
     /**
      * @var array
     */
-    protected $vars = [
+    protected $config = [
         self::KEY_CHILDREN      => [],
         self::KEY_DATA_CLASS    => null,
         self::KEY_DATA          => null,
+        self::KEY_VALUES        => [],
         self::KEY_ERRORS        => [],
         self::KEY_HTML          => [],
         self::KEY_METHOD        => 'POST',
@@ -65,7 +67,7 @@ class Form implements FormBuilderInterface
     */
     public function setName($name)
     {
-        $this->setVars(compact('name'));
+        $this->configs(compact('name'));
     }
 
 
@@ -74,7 +76,7 @@ class Form implements FormBuilderInterface
     */
     public function getName()
     {
-        return $this->getVar(static::KEY_NAME);
+        return $this->getConfig(static::KEY_NAME);
     }
 
 
@@ -87,7 +89,7 @@ class Form implements FormBuilderInterface
     public function start(string $method = 'POST', string $action = '/', array $attrs = [])
     {
          $defaults = compact('method', 'action');
-         $this->setVars($defaults);
+         $this->configs($defaults);
 
          $attributes = array_merge($defaults, $attrs);
          $child = $attributes[static::KEY_NAME] ?? $this->getName();
@@ -96,7 +98,7 @@ class Form implements FormBuilderInterface
          $resolver = new OptionResolver($attributes);
          $formView = new FormView($child, FormStartType::class, $resolver);
 
-         $this->setVar(static::KEY_FORM_BEGIN, true);
+         $this->config(static::KEY_FORM_BEGIN, true);
          $this->addHtml($formView);
 
          return $this;
@@ -108,9 +110,21 @@ class Form implements FormBuilderInterface
     */
     public function end()
     {
-        if($this->vars[static::KEY_FORM_BEGIN]) {
+        if($this->getConfig(static::KEY_FORM_BEGIN)) {
             return $this->buildHtml(['</form>']);
         }
+    }
+
+
+    /**
+     * @param $child
+     * @return mixed|null
+    */
+    public function getValues($child)
+    {
+        $values = $this->getConfig(static::KEY_VALUES);
+
+        return $values[$child] ?? null;
     }
 
 
@@ -125,17 +139,24 @@ class Form implements FormBuilderInterface
     public function add(string $child, string $type, array $options = []): FormBuilderInterface
     {
          $resolver = new OptionResolver($options);
-         $formView = new FormView($child, TextType::class, $resolver);
 
-         if(! \is_null($type)) {
-             $formView = new FormView($child, $type, $resolver);
+         /*
+         $value = $this->getValues($child);
+         $resolver->setValue($value);
+         */
+
+         if(\is_null($type)) {
+              $type = TextType::class;
          }
 
+         $formView = new FormView($child, $type, $resolver);
          $this->addChild($formView);
          $this->addHtml($formView);
 
          return $this;
     }
+
+
 
 
     /**
@@ -144,10 +165,11 @@ class Form implements FormBuilderInterface
     */
     public function addChild(FormView $formView): Form
     {
-        $this->vars[static::KEY_CHILDREN][$formView->getChild()] = $formView;
+        $this->config[static::KEY_CHILDREN][$formView->getChild()] = $formView;
 
         return $this;
     }
+
 
 
     /**
@@ -156,7 +178,7 @@ class Form implements FormBuilderInterface
     */
     public function addHtml(FormView $formView)
     {
-        $this->vars[static::KEY_HTML][$formView->getChild()] = $formView->create();
+        $this->config[static::KEY_HTML][$formView->getChild()] = $formView->create();
 
         return $this;
     }
@@ -167,9 +189,9 @@ class Form implements FormBuilderInterface
      * @param $value
      * @return $this
     */
-    public function setVar($key, $value): Form
+    public function config($key, $value): Form
     {
-        $this->vars[$key] = $value;
+        $this->config[$key] = $value;
 
         return $this;
     }
@@ -177,20 +199,20 @@ class Form implements FormBuilderInterface
 
 
     /**
-     * @param array $vars
+     * @param array $config
     */
-    public function setVars(array $vars)
+    public function configs(array $config)
     {
-         $this->vars = array_merge($this->vars, $vars);
+         $this->config = array_merge($this->config, $config);
     }
 
 
     /**
      * @return array[]
     */
-    public function getVars(): array
+    public function getConfigs(): array
     {
-        return $this->vars;
+        return $this->config;
     }
 
 
@@ -199,9 +221,9 @@ class Form implements FormBuilderInterface
      * @param null $default
      * @return mixed
     */
-    public function getVar(string $key, $default = null)
+    public function getConfig(string $key, $default = null)
     {
-        return $this->vars[$key] ?? $default;
+        return $this->config[$key] ?? $default;
     }
 
 
@@ -210,7 +232,7 @@ class Form implements FormBuilderInterface
     */
     public function getChildren(): array
     {
-        return $this->vars[static::KEY_CHILDREN];
+        return $this->config[static::KEY_CHILDREN];
     }
 
 
@@ -221,29 +243,30 @@ class Form implements FormBuilderInterface
     */
     public function getChild(string $child)
     {
-        if(! \array_key_exists($child, $this->getVar(static::KEY_CHILDREN))) {
+        if(! \array_key_exists($child, $this->getConfig(static::KEY_CHILDREN))) {
             throw new FormViewException('child ('. $child . ') has not defined row.');
         }
 
         /** @var BaseType $row */
-        return $this->vars[static::KEY_CHILDREN][$child];
+        return $this->config[static::KEY_CHILDREN][$child];
     }
 
 
 
     /**
      * @param string|null $child
-     * @return array|FomValue|null
+     * @return array|FormValue|null
     */
     public function getData(string $child = null)
     {
-         $children = $this->getVar(static::KEY_CHILDREN);
+         $children = $this->getConfig(static::KEY_CHILDREN);
 
          if(\array_key_exists($child, $children)) {
-              return new FomValue($child, $this->vars[static::KEY_DATA]);
+              // TODO refactoring
+              return new FormValue($child, $this->config[static::KEY_DATA]);
          }
 
-         return $this->getVar(static::KEY_DATA);
+         return $this->getConfig(static::KEY_DATA);
     }
 
 
@@ -253,7 +276,7 @@ class Form implements FormBuilderInterface
     */
     public function setData($data)
     {
-        $this->setVar(static::KEY_DATA, $data);
+        $this->config(static::KEY_DATA, $data);
     }
 
 
@@ -307,13 +330,13 @@ class Form implements FormBuilderInterface
 
         if($data) {
 
-             if(! $dataClass = $this->getVar(static::KEY_DATA_CLASS)) {
+             if(! $dataClass = $this->getConfig(static::KEY_DATA_CLASS)) {
                   $this->setData($data);
              }
 
              // TODO via DI container make object
-             if(! $objMapped = $this->getVar(self::KEY_DATA)) {
-                 $objMapped = $this->getVar(self::KEY_DATA);
+             if(! $objMapped = $this->getConfig(self::KEY_DATA)) {
+                 $objMapped = $this->getConfig(self::KEY_DATA);
              }
 
              if($objMapped) {
@@ -332,7 +355,12 @@ class Form implements FormBuilderInterface
                  $this->setData($objMapped);
              }
 
-             $this->setVar(static::KEY_SUBMIT_STATUS, true);
+             $items = [
+                 static::KEY_VALUES => $data,
+                 static::KEY_SUBMIT_STATUS => true
+             ];
+
+             $this->configs($items);
          }
     }
 
@@ -345,20 +373,19 @@ class Form implements FormBuilderInterface
     */
     public function createView(string $child = null, array $options = [])
     {
-        /** @var FormView $formView */
         if($child) {
 
-             /** @var OptionResolver $resolver */
-             $resolver = $this->getChild($child)->getOptionResolver();
+             $formView = $this->getChild($child);
+             $resolver = $formView->getOptionResolver();
 
              if($options) {
                  $resolver->setOptions($options);
              }
 
-             return $this->getChild($child)->create();
+             return $formView->create();
         }
 
-        if(! $this->vars[static::KEY_FORM_BEGIN]) {
+        if(! $this->getConfig(static::KEY_FORM_BEGIN)) {
             return $this->buildHtml();
         }
 
@@ -372,7 +399,7 @@ class Form implements FormBuilderInterface
     */
     public function buildHtml(array $appends = []): string
     {
-        $htmlParts = array_merge($this->getVar(static::KEY_HTML), $appends);
+        $htmlParts = array_merge($this->getConfig(static::KEY_HTML), $appends);
         return implode("\n", $htmlParts);
     }
 
@@ -382,7 +409,7 @@ class Form implements FormBuilderInterface
     */
     public function isSubmit(): bool
     {
-        return $this->getVar(static::KEY_SUBMIT_STATUS);
+        return $this->getConfig(static::KEY_SUBMIT_STATUS);
     }
 
 

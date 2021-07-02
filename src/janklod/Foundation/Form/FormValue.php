@@ -7,10 +7,10 @@ use ReflectionObject;
 
 
 /**
- * Class FomValue
+ * Class FormValue
  * @package Jan\Foundation\Form
 */
-class FomValue
+class FormValue
 {
 
      /**
@@ -41,7 +41,7 @@ class FomValue
      /**
       * @throws \Exception
      */
-     public function getValues()
+     public function getData()
      {
          if(\is_array($this->data) && \array_key_exists($this->child, $this->data)) {
              return $this->data[$this->child];

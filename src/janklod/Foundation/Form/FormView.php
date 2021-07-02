@@ -20,6 +20,11 @@ class FormView
     protected $child;
 
 
+    /**
+     * @var mixed
+    */
+    protected $values;
+
 
     /**
      * @var string
@@ -44,6 +49,25 @@ class FormView
         $this->resolver    = $resolver;
         $this->typeClass   = $type;
     }
+
+
+    /**
+     * @param $values
+    */
+    public function setValues($values)
+    {
+        $this->values = $values;
+    }
+
+
+    /**
+     * @return mixed
+    */
+    public function getValues()
+    {
+        return $this->values;
+    }
+
 
 
     /**

@@ -166,9 +166,18 @@ class ParameterResolver
     */
     public function resolveTarget($target)
     {
-        if(\is_string($target) && $namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
-            $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
+        if(\is_string($target)) {
+
+            if($namespace = $this->getOption(static::OPTION_PARAM_NAMESPACE)) {
+                $target = rtrim(ucfirst($namespace), '\\') .'\\' . $target;
+            }
+
+            if(strpos($target, '@') !== false) {
+                list($controller, $action) = explode('@', $target);
+                return compact('controller', 'action');
+            }
         }
+
         return $target;
     }
 

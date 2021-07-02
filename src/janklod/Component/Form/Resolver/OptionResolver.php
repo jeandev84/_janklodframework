@@ -16,11 +16,11 @@ class OptionResolver
           'label'         => '',
           'attr'          => [],
           'mapped'        => true,
-          'data'          => null,
+     /*   'data'          => null, */
           'constraints'   => [],
           'multiple'      => false,
           'parent'        => null,
-          'value'         => null,
+     /*   'value'         => null, */
           'surround'      => '<div>',
           'surround_attr' => []
       ];
